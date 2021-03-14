@@ -7,9 +7,9 @@ exports.init = function(io) {
       /**
        * it creates or joins a room
        */
-      socket.on('create or join', function (room, userId) {
+      socket.on('create or join', function (room, image_uri, userId) {
         socket.join(room);
-        chat.to(room).emit('joined', room, userId);
+        chat.to(room).emit('joined', room, image_uri, userId);
       });
 
       socket.on('chat', function (room, userId, chatText) {
