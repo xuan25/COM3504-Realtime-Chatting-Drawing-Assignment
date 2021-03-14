@@ -1,6 +1,7 @@
 let name = null;
 let roomNo = null;
-let socket=null;
+let socket_chat=io.connect('/chat');
+let socket_draw=null;
 
 
 /**
@@ -14,6 +15,36 @@ function init() {
     document.getElementById('chat_interface').style.display = 'none';
 
     //@todo here is where you should initialise the socket operations as described in teh lectures (room joining, chat message receipt etc.)
+    initChatSocket();
+}
+
+/**
+ * Initialises the socket for /chat
+ */
+function initChatSocket() {
+    // called when someone joins the room. If it is someone else it notifies the joining of the room
+    socket_chat.on('joined', function (room, userId) {
+        if (userId === name) {
+            // it enters the chat
+            hideLoginInterface(room, userId);
+        } else {
+            // notifies that someone has joined the room
+            writeOnChatHistory('<b>' + userId + '</b>' + ' joined room ' + room);
+        }
+    });
+    // called when a message is received
+    socket_chat.on('chat', function (room, userId, chatText) {
+        let who = userId
+        if (userId === name) {
+            who = 'Me'
+            writeOnChatHistory('<b>' + who + ':</b> ' + chatText);
+            clearInputBox();
+        }
+        else{
+            writeOnChatHistory('<b>' + who + ':</b> ' + chatText);
+        }
+    });
+
 }
 
 /**
@@ -33,6 +64,7 @@ function generateRoom() {
 function sendChatText() {
     let chatText = document.getElementById('chat_input').value;
     // @todo send the chat message
+    socket_chat.emit('chat', roomNo, name, chatText);
 }
 
 /**
@@ -45,8 +77,9 @@ function connectToRoom() {
     let imageUrl= document.getElementById('image_url').value;
     if (!name) name = 'Unknown-' + Math.random();
     //@todo join the room
-    initCanvas(socket, imageUrl);
-    hideLoginInterface(roomNo, name);
+    initCanvas(socket_draw, imageUrl);
+    socket_chat.emit('create or join', roomNo, name);
+    // hideLoginInterface(roomNo, name);
 }
 
 /**
@@ -54,7 +87,7 @@ function connectToRoom() {
  * this is to be called when the socket receives the chat message (socket.on ('message'...)
  * @param text: the text to append
  */
-function writeOnHistory(text) {
+function writeOnChatHistory(text) {
     if (text==='') return;
     let history = document.getElementById('history');
     let paragraph = document.createElement('p');
@@ -62,6 +95,12 @@ function writeOnHistory(text) {
     history.appendChild(paragraph);
     // scroll to the last element
     history.scrollTop = history.scrollHeight;
+}
+
+/**
+ * clearInputBox
+ */
+ function clearInputBox() {
     document.getElementById('chat_input').value = '';
 }
 
