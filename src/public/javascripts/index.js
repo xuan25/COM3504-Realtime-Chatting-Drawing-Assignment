@@ -84,7 +84,7 @@ function initFileLoader() {
  */
 function connectToRoom() {
     roomNo = document.getElementById('roomNo').value;
-    name = document.getElementById('name').value;
+    username = document.getElementById('name').value;
     let imageUrl = document.getElementById('image_url').value;
     if (imageUrl === "") {
         imageUrl = img_data_base64;
@@ -94,11 +94,10 @@ function connectToRoom() {
         // change imageUrl 
 
     }
-    if (!name) name = 'Unknown-' + Math.random();
-    //@todo join the room
+    if (!username) username = 'Unknown-' + Math.random();
+    //join the room
     initCanvas(socket_draw, imageUrl);
-    socket_chat.emit('create or join', roomNo, imageUrl, name);
-    // hideLoginInterface(roomNo, name);
+    socket_chat.emit('join', roomNo, imageUrl, username);
 }
 
 /**
