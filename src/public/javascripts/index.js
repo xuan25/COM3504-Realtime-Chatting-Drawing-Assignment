@@ -2,7 +2,7 @@ let name = null;
 let roomNo = null;
 let socket_chat=io.connect('/chat');
 let socket_draw=null;
-
+let img_data_base64;
 
 /**
  * called by <body onload>
@@ -14,6 +14,7 @@ function init() {
     document.getElementById('initial_form').style.display = 'block';
     document.getElementById('chat_interface').style.display = 'none';
 
+    initFileLoader();
     //@todo here is where you should initialise the socket operations as described in teh lectures (room joining, chat message receipt etc.)
     initChatSocket();
 }
@@ -67,6 +68,31 @@ function sendChatText() {
     socket_chat.emit('chat', roomNo, name, chatText);
 }
 
+function initFileLoader() {
+    let fileInput = document.getElementById('localImage');
+    fileInput.addEventListener('change', function () {
+        // check is the file is selected
+        if (!fileInput.value) {
+            info.innerHTML = 'No file selected';
+            return;
+        }
+        // check the file
+        let file = fileInput.files[0];
+        if (file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/gif') {
+            alert('Invalid file format');
+            return;
+        }
+        // get the file
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            img_data_base64 = e.target.result;
+        };
+        // read the file by dataURL(Base64)
+        reader.readAsDataURL(file);
+    });
+}
+
+
 /**
  * used to connect to a room. It gets the user name and room number from the
  * interface
@@ -74,7 +100,15 @@ function sendChatText() {
 function connectToRoom() {
     roomNo = document.getElementById('roomNo').value;
     name = document.getElementById('name').value;
-    let imageUrl= document.getElementById('image_url').value;
+    let imageUrl = document.getElementById('image_url').value;
+    if (imageUrl === "") {
+        imageUrl = img_data_base64;
+
+        // TODO: 
+        // Upload img data via Ajax, get an url from server
+        // change imageUrl 
+
+    }
     if (!name) name = 'Unknown-' + Math.random();
     //@todo join the room
     initCanvas(socket_draw, imageUrl);

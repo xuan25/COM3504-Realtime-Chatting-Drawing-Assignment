@@ -83,7 +83,7 @@ function initCanvas(sckt, imageUrl) {
                 // hide the image element as it is not needed
                 img.style.display = 'none';
             }
-        }, 10);
+        }, 100);
     });
 }
 
