@@ -64,7 +64,7 @@ function initCanvas(sckt, imageUrl) {
         // it takes time before the image size is computed and made available
         // here we wait until the height is set, then we resize the canvas based on the size of the image
         let poll = setInterval(function () {
-            if (img.naturalHeight) {
+            if (img.naturalHeight && img.clientWidth > 0) {
                 clearInterval(poll);
                 // resize the canvas
                 let ratioX=1;
@@ -83,7 +83,7 @@ function initCanvas(sckt, imageUrl) {
                 // hide the image element as it is not needed
                 img.style.display = 'none';
             }
-        }, 100);
+        }, 10);
     });
 }
 
