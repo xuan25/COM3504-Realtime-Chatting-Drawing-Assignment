@@ -1,4 +1,4 @@
-let name = null;
+let username = null;
 let roomNo = null;
 let socket_chat=io.connect('/chat');
 let socket_draw=null;
@@ -19,54 +19,40 @@ function init() {
     initChatSocket();
 }
 
+// All unsent messages
+// TODO : Store them in IndexDB
+var unsent_msgs = {}
+
 /**
  * Initialises the socket for /chat
  */
 function initChatSocket() {
-    // called when someone joins the room. If it is someone else it notifies the joining of the room
-    socket_chat.on('joined', function (room, image_uri, userId) {
-        if (userId === name) {
-            // it enters the chat
-            hideLoginInterface(room, userId);
-        } else {
-            // notifies that someone has joined the room
-            writeOnChatHistory('<b>' + userId + '</b>' + ' joined room ' + room);
-        }
+    socket_chat.on('joined', function () {
+       // it enters the chat
+       hideLoginInterface(roomNo, username);
     });
-    // called when a message is received
-    socket_chat.on('chat', function (room, userId, chatText) {
-        let who = userId
-        if (userId === name) {
-            who = 'Me'
-            writeOnChatHistory('<b>' + who + ':</b> ' + chatText);
-            clearInputBox();
-        }
-        else{
-            writeOnChatHistory('<b>' + who + ':</b> ' + chatText);
-        }
+    socket_chat.on('new-member', function (userId) {
+        // notifies that someone has joined the room
+        writeOnChatHistory('<b>' + userId + '</b>' + ' has joined the room');
     });
-
+    socket_chat.on('member-left', function (userId) {
+        // notifies that someone has left the room
+        writeOnChatHistory('<b>' + userId + '</b>' + ' has left the room');
+    });
+    socket_chat.on('posted-chat', function (msg_id) {
+        // message post succeed
+        message = unsent_msgs[msg_id]
+        delete unsent_msgs[msg_id]
+        // TODO : Store them in IndexDB
+        writeOnChatHistory('<b>Me:</b> ' + message);
+    });
+    socket_chat.on('recieve-chat', function (username, msg_id, message) {
+        // a message is received
+        // TODO : Store them in IndexDB
+        writeOnChatHistory('<b>' + username + ':</b> ' + message);
+    });
 }
 
-/**
- * called to generate a random room number
- * This is a simplification. A real world implementation would ask the server to generate a unique room number
- * so to make sure that the room number is not accidentally repeated across uses
- */
-function generateRoom() {
-    roomNo = Math.round(Math.random() * 10000);
-    document.getElementById('roomNo').value = 'R' + roomNo;
-}
-
-/**
- * called when the Send button is pressed. It gets the text to send from the interface
- * and sends the message via  socket
- */
-function sendChatText() {
-    let chatText = document.getElementById('chat_input').value;
-    // @todo send the chat message
-    socket_chat.emit('chat', roomNo, name, chatText);
-}
 
 function initFileLoader() {
     let fileInput = document.getElementById('localImage');
@@ -92,7 +78,6 @@ function initFileLoader() {
     });
 }
 
-
 /**
  * used to connect to a room. It gets the user name and room number from the
  * interface
@@ -117,6 +102,19 @@ function connectToRoom() {
 }
 
 /**
+ * called when the Send button is pressed. It gets the text to send from the interface
+ * and sends the message via  socket
+ */
+ function sendChatText() {
+    let message = document.getElementById('chat_input').value;
+    let msg_id = 'msg_' + Math.round(Math.random() * 10000)
+    unsent_msgs[msg_id] = message
+    socket_chat.emit('post-chat', msg_id, message);
+    clearInputBox();
+}
+
+
+/**
  * it appends the given html text to the history div
  * this is to be called when the socket receives the chat message (socket.on ('message'...)
  * @param text: the text to append
@@ -129,6 +127,16 @@ function writeOnChatHistory(text) {
     history.appendChild(paragraph);
     // scroll to the last element
     history.scrollTop = history.scrollHeight;
+}
+
+/**
+ * called to generate a random room number
+ * This is a simplification. A real world implementation would ask the server to generate a unique room number
+ * so to make sure that the room number is not accidentally repeated across uses
+ */
+ function generateRoom() {
+    roomNo = Math.round(Math.random() * 10000);
+    document.getElementById('roomNo').value = 'R' + roomNo;
 }
 
 /**
