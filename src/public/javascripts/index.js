@@ -2,6 +2,7 @@ let username = null;
 let roomNo = null;
 let socket_chat=io.connect('/chat');
 let socket_draw=null;
+let imageUrl=null;
 
 
 /**
@@ -50,6 +51,17 @@ function initChatSocket() {
         // TODO : Store them in IndexDB
         writeOnChatHistory('<b>' + username + ':</b> ' + message);
     });
+    socket_chat.on('rejoin', function () {
+        writeOnChatHistory('<b>Re-joining</b>');
+        socket_chat.emit('join', roomNo, imageUrl, username);
+        writeOnChatHistory('<b>Re-joined</b>');
+        for (var msg_id in unsent_msgs) {
+            let message = unsent_msgs[msg_id];
+            if(message){
+                socket_chat.emit('post-chat', msg_id, message);
+            }
+        }
+    });
 }
 
 /**
@@ -59,7 +71,7 @@ function initChatSocket() {
  function connectToRoom() {
     roomNo = document.getElementById('roomNo').value;
     username = document.getElementById('name').value;
-    let imageUrl= document.getElementById('image_url').value;
+    imageUrl= document.getElementById('image_url').value;
     if (!username) username = 'Unknown-' + Math.random();
     //join the room
     initCanvas(socket_draw, imageUrl);

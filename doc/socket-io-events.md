@@ -11,6 +11,7 @@
 | /chat | recieve-chat  | s-c       | recieve a chat message from others | username, msg_id, message |
 | /chat | disconnect    | c-s       | Built-in, disconnect from /chat    |                           |
 | /chat | member-left   | s-c       | A member has left                  | username                  |
+| /chat | rejoin        | s-c       | Rejoin required (server restarted) |                           |
 | ----- | ------------- | --------- | ---------------------------------- |                           |
 | /draw | connection    | c-s       | Built-in, connect to /draw         |                           |
 | /draw | post-start    | c-s       | Start a new draw                   |                           |

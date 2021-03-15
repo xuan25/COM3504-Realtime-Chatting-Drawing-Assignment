@@ -17,16 +17,26 @@ exports.init = function(io) {
       });
 
       socket.on('post-chat', function (msg_id, message) {
-        socket_room = socket_info_dict[socket.id]["socket_room"]
-        username = socket_info_dict[socket.id]["username"]
+        socket_info = socket_info_dict[socket.id]
+        if (!socket_info){
+          socket.emit('rejoin');
+          return
+        }
+        socket_room = socket_info["socket_room"]
+        username = socket_info["username"]
 
         socket.emit('posted-chat', msg_id);
         socket.broadcast.to(socket_room).emit('recieve-chat', username, msg_id, message);
+        
       });
 
       socket.on('disconnect', function(){
-        socket_room = socket_info_dict[socket.id]["socket_room"]
-        username = socket_info_dict[socket.id]["username"]
+        socket_info = socket_info_dict[socket.id]
+        if (!socket_info){
+          return
+        }
+        socket_room = socket_info["socket_room"]
+        username = socket_info["username"]
         
         delete socket_info_dict[socket.id]
         socket.broadcast.to(socket_room).emit('member-left', username);
