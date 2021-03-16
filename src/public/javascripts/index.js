@@ -30,12 +30,19 @@ var unsent_msgs = {}
  * Initialises the socket for /chat
  */
 function initChatSocket() {
-    socket_chat.on('joined', function () {
+    socket_chat.on('joined', async function () {
         isOnline = true
         // it enters the chat
         if (!isJoined){
             hideLoginInterface(roomNo, username);
             isJoined = true
+
+            let chatHistories = await getChatHistories(roomNo+imageUrl)
+            for (let chatHistory of chatHistories){
+                username = chatHistory.username
+                message = chatHistory.message
+                writeOnChatHistory('<b>' + username + ':</b> ' + message);
+            }
         }
         else{
             writeOnChatHistory('<b>Rejoined the room.</b>');
@@ -60,7 +67,7 @@ function initChatSocket() {
         // notifies that someone has left the room
         writeOnChatHistory('<b>' + userId + '</b>' + ' has left the room');
     });
-    socket_chat.on('posted-chat', function (msg_id) {
+    socket_chat.on('posted-chat', async function (msg_id) {
         // message post succeed
         message = unsent_msgs[msg_id]
         delete unsent_msgs[msg_id]
@@ -69,11 +76,13 @@ function initChatSocket() {
         historyEle.parentNode.removeChild(historyEle);
 
         writeOnChatHistory('<b>Me:</b> ' + message);
+        await storeChatHistory(roomNo+imageUrl, 'Me', msg_id, message)
     });
-    socket_chat.on('recieve-chat', function (username, msg_id, message) {
+    socket_chat.on('recieve-chat', async function (username, msg_id, message) {
         // a message is received
         // TODO : Store them in IndexDB
         writeOnChatHistory('<b>' + username + ':</b> ' + message);
+        await storeChatHistory(roomNo+imageUrl, username, msg_id, message)
     });
     socket_chat.on('connect', function () {
         if(isJoined){
