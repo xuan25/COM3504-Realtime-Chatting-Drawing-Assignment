@@ -19,7 +19,6 @@ exports.init = function(io) {
       socket.on('post-chat', function (msg_id, message) {
         socket_info = socket_info_dict[socket.id]
         if (!socket_info){
-          socket.emit('rejoin');
           return
         }
         socket_room = socket_info["socket_room"]
@@ -27,7 +26,6 @@ exports.init = function(io) {
 
         socket.emit('posted-chat', msg_id);
         socket.broadcast.to(socket_room).emit('recieve-chat', username, msg_id, message);
-        
       });
 
       socket.on('disconnect', function(){

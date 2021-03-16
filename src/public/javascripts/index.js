@@ -4,6 +4,9 @@ let socket_chat=io.connect('/chat');
 let socket_draw=null;
 let imageUrl=null;
 
+let isJoined = false
+let isOnline = false
+
 
 /**
  * called by <body onload>
@@ -28,8 +31,26 @@ var unsent_msgs = {}
  */
 function initChatSocket() {
     socket_chat.on('joined', function () {
-       // it enters the chat
-       hideLoginInterface(roomNo, username);
+        isOnline = true
+        // it enters the chat
+        if (!isJoined){
+            hideLoginInterface(roomNo, username);
+            isJoined = true
+        }
+        else{
+            writeOnChatHistory('<b>Rejoined the room.</b>');
+        }
+
+        // Post all unsent messages
+        // If the server is disconnected, wait for all users to reconnect.
+        setTimeout(function(){
+            for (var msg_id in unsent_msgs) {
+                let message = unsent_msgs[msg_id];
+                if(message){
+                    socket_chat.emit('post-chat', msg_id, message);
+                }
+            }
+        }, 1000);
     });
     socket_chat.on('new-member', function (userId) {
         // notifies that someone has joined the room
@@ -44,6 +65,9 @@ function initChatSocket() {
         message = unsent_msgs[msg_id]
         delete unsent_msgs[msg_id]
         // TODO : Store them in IndexDB
+        let historyEle = document.getElementById(msg_id);
+        historyEle.parentNode.removeChild(historyEle);
+
         writeOnChatHistory('<b>Me:</b> ' + message);
     });
     socket_chat.on('recieve-chat', function (username, msg_id, message) {
@@ -51,15 +75,16 @@ function initChatSocket() {
         // TODO : Store them in IndexDB
         writeOnChatHistory('<b>' + username + ':</b> ' + message);
     });
-    socket_chat.on('rejoin', function () {
-        writeOnChatHistory('<b>Re-joining</b>');
-        socket_chat.emit('join', roomNo, imageUrl, username);
-        writeOnChatHistory('<b>Re-joined</b>');
-        for (var msg_id in unsent_msgs) {
-            let message = unsent_msgs[msg_id];
-            if(message){
-                socket_chat.emit('post-chat', msg_id, message);
-            }
+    socket_chat.on('connect', function () {
+        if(isJoined){
+            writeOnChatHistory('<b>Reconnected to the server.</b>');
+            socket_chat.emit('join', roomNo, imageUrl, username);
+        }
+    });
+    socket_chat.on('disconnect', function () {
+        if(isJoined){
+            isOnline = false
+            writeOnChatHistory('<b>The connection was lost.</b>');
         }
     });
 }
@@ -68,7 +93,7 @@ function initChatSocket() {
  * used to connect to a room. It gets the user name and room number from the
  * interface
  */
- function connectToRoom() {
+function connectToRoom() {
     roomNo = document.getElementById('roomNo').value;
     username = document.getElementById('name').value;
     imageUrl= document.getElementById('image_url').value;
@@ -82,13 +107,18 @@ function initChatSocket() {
  * called when the Send button is pressed. It gets the text to send from the interface
  * and sends the message via  socket
  */
- function sendChatText() {
+function sendChatText() {
     let message = document.getElementById('chat_input').value;
-    let msg_id = 'msg_' + Math.round(Math.random() * 10000)
+    let msg_id = 'msg_' + Math.round(Math.random() * (2 ** 53))
 
     unsent_msgs[msg_id] = message
-    socket_chat.emit('post-chat', msg_id, message);
+
+    if(isOnline){
+        socket_chat.emit('post-chat', msg_id, message);
+    }
+    
     clearInputBox();
+    writeOnChatHistoryWithId('<b>Me:</b> ' + message + ' <b>(unsent)</b>', msg_id);
 }
 
 
@@ -108,12 +138,23 @@ function writeOnChatHistory(text) {
     history.scrollTop = history.scrollHeight;
 }
 
+function writeOnChatHistoryWithId(text, id) {
+    if (text==='') return;
+    let history = document.getElementById('history');
+    let paragraph = document.createElement('p');
+    paragraph.id = id
+    paragraph.innerHTML = text;
+    history.appendChild(paragraph);
+    // scroll to the last element
+    history.scrollTop = history.scrollHeight;
+}
+
 /**
  * called to generate a random room number
  * This is a simplification. A real world implementation would ask the server to generate a unique room number
  * so to make sure that the room number is not accidentally repeated across uses
  */
- function generateRoom() {
+function generateRoom() {
     roomNo = Math.round(Math.random() * 10000);
     document.getElementById('roomNo').value = 'R' + roomNo;
 }
@@ -121,7 +162,7 @@ function writeOnChatHistory(text) {
 /**
  * clearInputBox
  */
- function clearInputBox() {
+function clearInputBox() {
     document.getElementById('chat_input').value = '';
 }
 
