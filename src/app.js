@@ -7,6 +7,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var deprecatedRouter = require('./routes/deprecated');
 var usersRouter = require('./routes/users');
+var uploadRouter = require('./routes/upload');
 
 var app = express();
 
@@ -23,6 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/deprecated', deprecatedRouter);
 app.use('/users', usersRouter);
+app.use('/upload', uploadRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
