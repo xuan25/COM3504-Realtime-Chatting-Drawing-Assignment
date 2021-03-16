@@ -1,6 +1,6 @@
 <mxfile>
     <diagram id="-eXFAZke36wqUJXHRe3i" name="Deployment">
-        <mxGraphModel dx="1404" dy="754" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+        <mxGraphModel dx="1747" dy="884" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -44,7 +44,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="5UI-byoxtsYIDsgE9-n4" name="Home/History Page">
-        <mxGraphModel dx="2006" dy="1077" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+        <mxGraphModel dx="1747" dy="884" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
             <root>
                 <mxCell id="Yl9-e-bZh0Sq_qEy7O5I-0"/>
                 <mxCell id="Yl9-e-bZh0Sq_qEy7O5I-1" parent="Yl9-e-bZh0Sq_qEy7O5I-0"/>
@@ -130,7 +130,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="hI1TmA0gPF8iEIPupuR5" name="Chat Page">
-        <mxGraphModel dx="1404" dy="754" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+        <mxGraphModel dx="1747" dy="884" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
             <root>
                 <mxCell id="npWErWVc9F3IIqFAF1oh-0"/>
                 <mxCell id="npWErWVc9F3IIqFAF1oh-1" parent="npWErWVc9F3IIqFAF1oh-0"/>
@@ -203,7 +203,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="VjUH9Q85FokRLhZDvzZm" name="Upload Page">
-        <mxGraphModel dx="1404" dy="754" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+        <mxGraphModel dx="1747" dy="884" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
             <root>
                 <mxCell id="_taWAuS0saVIPjQfKpEh-0"/>
                 <mxCell id="_taWAuS0saVIPjQfKpEh-1" parent="_taWAuS0saVIPjQfKpEh-0"/>
@@ -272,7 +272,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="FS9AC2aH7aNXBeUNpC4l" name="Uploaded Page">
-        <mxGraphModel dx="1404" dy="754" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+        <mxGraphModel dx="1747" dy="884" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
             <root>
                 <mxCell id="woKi-y-Kxhk13CgF9vvk-0"/>
                 <mxCell id="woKi-y-Kxhk13CgF9vvk-1" parent="woKi-y-Kxhk13CgF9vvk-0"/>
