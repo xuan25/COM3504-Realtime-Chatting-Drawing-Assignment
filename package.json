@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "mongoose": "^5.12.0",
-    "node-fetch": "^2.6.1"
-  }
-}
