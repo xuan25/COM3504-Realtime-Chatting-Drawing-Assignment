@@ -8,6 +8,8 @@ var indexRouter = require('./routes/index');
 var deprecatedRouter = require('./routes/deprecated');
 var usersRouter = require('./routes/users');
 var uploadRouter = require('./routes/upload');
+var newRouter = require('./routes/new');
+var imgRouter = require('./routes/img');
 
 var app = express();
 
@@ -25,6 +27,8 @@ app.use('/', indexRouter);
 app.use('/deprecated', deprecatedRouter);
 app.use('/users', usersRouter);
 app.use('/upload', uploadRouter);
+app.use('/new', newRouter);
+app.use('/img', imgRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

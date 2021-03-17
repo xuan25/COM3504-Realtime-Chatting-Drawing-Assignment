@@ -121,7 +121,7 @@ function initFileLoader() {
   });
 }
 
-function connectToRoom() {
+function upload() {
   // roomNo = document.getElementById('roomNo').value;
   title = document.getElementById('title').value;
   author = document.getElementById('author').value;
@@ -153,6 +153,27 @@ function connectToRoom() {
   console.log(author);
   console.log(description);
   console.log(imageUrl);
+
+
+  data = { title: title, author: author, desc: description, img:imageUrl }
+
+  json = JSON.stringify(data);
+
+  $.ajax({
+    url: "/new",
+    type: "POST",
+    data: json,
+
+    contentType: "application/json",
+    success: function (response) {
+      console.log(JSON.stringify(response));
+    },
+    error: function (xhr, status, error) {
+      console.log(error);
+    },
+  });
+
+
 }
 
 
