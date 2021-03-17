@@ -1,8 +1,19 @@
 var localMediaStream = null;
 var videoStreamInited = false;
 
+
+let title = null;
+let author = null;
+let description = null;
+let imageUrl=null;
+let img_data_local_base64;
+let img_data_camera_base64;
+
+// let roomNo = null;
+
 $(document).ready(function() {
 	initPanel();
+  initFileLoader();
   initSnapshot();
 });
 
@@ -80,7 +91,69 @@ function initSnapshot(){
 			canvas.height = video.videoHeight;
 			
       ctx.drawImage(video, 0, 0);  
-      console.log(canvas.toDataURL('image/png'))
+      // console.log(canvas.toDataURL('image/png'))
+      img_data_camera_base64 = canvas.toDataURL('image/png');
     }
   });
 }
+
+function initFileLoader() {
+  let fileInput = document.getElementById('fromFile');
+  fileInput.addEventListener('change', function () {
+      // check is the file is selected
+      if (!fileInput.value) {
+          info.innerHTML = 'No file selected';
+          return;
+      }
+      // check the file
+      let file = fileInput.files[0];
+      if (file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/gif') {
+          alert('Invalid file format');
+          return;
+      }
+      // get the file
+      let reader = new FileReader();
+      reader.onload = function(e) {
+        img_data_local_base64 = e.target.result;
+      };
+      // read the file by dataURL(Base64)
+      reader.readAsDataURL(file);
+  });
+}
+
+function connectToRoom() {
+  // roomNo = document.getElementById('roomNo').value;
+  title = document.getElementById('title').value;
+  author = document.getElementById('author').value;
+  description = document.getElementById('description').value;
+
+  sel = $('#selectBox').val()
+  if (sel === "1") { //url
+    imageUrl = document.getElementById('fromUrl').value;
+  }
+  else if (sel === "2") { //local file
+    imageUrl = img_data_local_base64;
+  }
+  else { //camera
+    imageUrl = img_data_camera_base64;
+  }
+  
+  
+  if (!title) title = 'Unknown title-' + Math.random();
+  if (!author) author = 'Unknown author-' + Math.random();
+  if (!description) description = 'Unknown description-' + Math.random();
+  //join the room
+  // initCanvas(socket_draw, imageUrl);
+  // socket_chat.emit('join', roomNo, imageUrl, authorName);
+
+  //TODO:
+  //upload all the information join the room
+
+  console.log(title);
+  console.log(author);
+  console.log(description);
+  console.log(imageUrl);
+}
+
+
+
