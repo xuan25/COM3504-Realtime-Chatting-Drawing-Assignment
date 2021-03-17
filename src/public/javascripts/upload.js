@@ -1,15 +1,8 @@
 var localMediaStream = null;
 var videoStreamInited = false;
 
-
-let title = null;
-let author = null;
-let description = null;
-let imageUrl=null;
-let img_data_local_base64;
-let img_data_camera_base64;
-
-// let roomNo = null;
+let img_data_local_base64 = null;
+let img_data_camera_base64 = null;
 
 $(document).ready(function() {
 	initPanel();
@@ -122,41 +115,34 @@ function initFileLoader() {
 }
 
 function upload() {
-  // roomNo = document.getElementById('roomNo').value;
-  title = document.getElementById('title').value;
-  author = document.getElementById('author').value;
-  description = document.getElementById('description').value;
+  title = $("#title").val();
+  author = $("#author").val();
+  description = $("#description").val();
 
   sel = $('#selectBox').val()
   if (sel === "1") { //url
-    imageUrl = document.getElementById('fromUrl').value;
+    imgUrl = $("#fromUrl").val()
+    createRoomByUrl(imgUrl, title, author, description);
   }
   else if (sel === "2") { //local file
-    imageUrl = img_data_local_base64;
+    createRoomByUpload(img_data_local_base64, title, author, description)
   }
   else { //camera
-    imageUrl = img_data_camera_base64;
+    createRoomByUpload(img_data_camera_base64, title, author, description)
   }
-  
-  
-  if (!title) title = 'Unknown title-' + Math.random();
-  if (!author) author = 'Unknown author-' + Math.random();
-  if (!description) description = 'Unknown description-' + Math.random();
-  //join the room
-  // initCanvas(socket_draw, imageUrl);
-  // socket_chat.emit('join', roomNo, imageUrl, authorName);
-
-  //TODO:
-  //upload all the information join the room
-
-  console.log(title);
-  console.log(author);
-  console.log(description);
-  console.log(imageUrl);
+}
 
 
-  data = { title: title, author: author, desc: description, img:imageUrl }
+function createRoomByUrl(imgUrl, title, author, description){
+  createRoom(title, author, description, "http", imgUrl)
+}
 
+function createRoomByUpload(data, title, author, description){
+  createRoom(title, author, description, "data", data)
+}
+
+function createRoom(title, author, description, imgType, img){
+  data = { title: title, author: author, desc: description, imgType: imgType, img: img }
   json = JSON.stringify(data);
 
   $.ajax({
@@ -166,14 +152,13 @@ function upload() {
 
     contentType: "application/json",
     success: function (response) {
+      // TODO: Show room num & link
       console.log(JSON.stringify(response));
     },
     error: function (xhr, status, error) {
       console.log(error);
     },
   });
-
-
 }
 
 

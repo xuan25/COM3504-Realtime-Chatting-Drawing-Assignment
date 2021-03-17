@@ -4,7 +4,6 @@ let Schema = mongoose.Schema;
 
 let Image = new Schema(
     {
-        roomId: {type: String, required: true},
         data: {type: String, required: true},
     }
 );

@@ -3,7 +3,7 @@ var router = express.Router();
 
 const newCon = require('../controllers/new');
 
-/* GET home page. */
-router.post('/', newCon.insert);
+/* Create new room */
+router.post('/', newCon.newRoom);
 
 module.exports = router;
