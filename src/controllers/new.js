@@ -1,26 +1,6 @@
 const Image = require('../models/images');
 const Room = require('../models/rooms');
 const fetch = require('node-fetch');
-const base64stream = require('base64-stream');
-
-function readAsDataURLAsync (body) {
-    return new Promise(function (resolve, reject) {
-        let chunks = [];
-        let myStream = body.pipe(base64stream.encode());
-        myStream.on('data', (chunk) => {
-            chunks = chunks.concat(chunk);
-        });
-        myStream.on('end', () => {
-            resolve(chunks.toString('base64'));
-        });
-
-        // let reader = new FileReader();
-        // reader.onload = function (e) {
-        //     resolve(e.target.result);
-        // };
-        // reader.onerror = reject;
-    });
-}
 
 function saveModelAsync (model) {
     return new Promise(function (resolve, reject) {
