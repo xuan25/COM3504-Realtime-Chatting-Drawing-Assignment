@@ -2,7 +2,6 @@ const Room = require('../models/rooms');
 const path = require('path');
 
 exports.getAll = function (req, res) {
-    id = parseInt(req.query.id)
     try {
         Room.find({},
             'imgId title author desc',
