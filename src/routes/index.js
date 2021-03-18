@@ -5,5 +5,6 @@ const indexCon = require('../controllers/index');
 
 /* GET home page. */
 router.get('/', indexCon.getIndex);
+router.get('/search', indexCon.searchAuthor);
 
 module.exports = router;

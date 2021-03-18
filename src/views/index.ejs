@@ -7,19 +7,20 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+  <script src="/javascripts/index.js"></script>
   <title><%= title %></title>
 </head>
 <body>
     <% include ./header %>
 
     <div class="w-75 mt-3 container-fluid">
-        <form class="d-flex">
-            <input class="form-control me-2" type="search" placeholder="Search Author" aria-label="Search">
-          <button class="btn btn-primary" type="submit">Search</button>
+        <form class="d-flex" onsubmit="return false">
+            <input id="searchBox" class="form-control me-2" type="search" placeholder="Search Author" aria-label="Search">
+            <button id="searchBtn" class="btn btn-primary" type="submit">Search</button>
         </form>
     </div>
 		
-		<div class="container-fluid w-75 mt-3 d-flex align-items-center justify-content-center flex-wrap masonry">
+		<div id="roomsContainer" class="container-fluid w-75 mt-3 d-flex align-items-center justify-content-center flex-wrap masonry">
 			<% for(room of roomList) { %>
 				<div class="card m-3 item" style="width: 18rem;">
 					<img src="/img/raw/<%= room.imgId %>" class="card-img-top" alt="...">
