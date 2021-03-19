@@ -122,26 +122,27 @@ function upload() {
   sel = $('#selectBox').val()
   if (sel === "1") { //url
     imgUrl = $("#fromUrl").val()
-    createRoomByUrl(imgUrl, title, author, description);
+    uploadByUrl(imgUrl, title, author, description);
   }
   else if (sel === "2") { //local file
-    createRoomByUpload(img_data_local_base64, title, author, description)
+    uploadByData(img_data_local_base64, title, author, description)
   }
   else { //camera
-    createRoomByUpload(img_data_camera_base64, title, author, description)
+    uploadByData(img_data_camera_base64, title, author, description)
   }
 }
 
 
-function createRoomByUrl(imgUrl, title, author, description){
-  createRoom(title, author, description, "http", imgUrl)
+function uploadByUrl(imgUrl, title, author, description){
+  doUpload(title, author, description, "http", imgUrl)
 }
 
-function createRoomByUpload(data, title, author, description){
-  createRoom(title, author, description, "data", data)
+function uploadByData(data, title, author, description){
+  doUpload(title, author, description, "data", data)
 }
 
-function createRoom(title, author, description, imgType, img){
+function doUpload(title, author, description, imgType, img){
+  $("#submitBtn").prop("disabled", true);
   data = { title: title, author: author, desc: description, imgType: imgType, img: img }
   json = JSON.stringify(data);
 
@@ -152,10 +153,18 @@ function createRoom(title, author, description, imgType, img){
 
     contentType: "application/json",
     success: function (response) {
-      // TODO: Show room num & link
+      if(response.code == 0){
+        successUrl = `/join/${response.data.imgId}`
+        window.location.href = successUrl;
+      }
+      else{
+        $("#submitBtn").prop("disabled", false);
+        console.log("Upload failed");
+      }
       console.log(JSON.stringify(response));
     },
     error: function (xhr, status, error) {
+      $("#submitBtn").prop("disabled", false);
       console.log(error);
     },
   });
