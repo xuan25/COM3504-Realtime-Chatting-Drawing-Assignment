@@ -4,7 +4,7 @@ const path = require('path');
 exports.getAll = function (req, res) {
     try {
         Image.find({},
-            'data',
+            'title author desc data',
             function (err, imgs) {
                 if (err){
                     res.status(500).send('Invalid data!');
@@ -15,9 +15,13 @@ exports.getAll = function (req, res) {
                 for (img of imgs){
                     res_list.push({ 
                         id: img._id, 
+                        title: img.title,
+                        author: img.author,
+                        desc: img.desc,
                         data: img.data
                     });
                 }
+
                 res.setHeader('Content-Type', 'application/json');
                 res.send(JSON.stringify({ code: 0, data: { list: res_list } }));
             });
@@ -30,7 +34,7 @@ exports.getOne = function (req, res) {
     id = path.basename(req.path)
     try {
         Image.find({_id: id},
-            'data',
+            'title author desc data',
             function (err, imgs) {
                 if (err){
                     res.status(500).send('Invalid data!');
@@ -41,7 +45,10 @@ exports.getOne = function (req, res) {
                 if (imgs.length > 0) {
                     let img = imgs[0];
                     res_data = {
-                        id: img._id,
+                        id: img._id, 
+                        title: img.title,
+                        author: img.author,
+                        desc: img.desc,
                         data: img.data
                     };
                     res.send(JSON.stringify({ code: 0, data: res_data }));
@@ -55,7 +62,66 @@ exports.getOne = function (req, res) {
     }
 }
 
-exports.getRaw = function (req, res) {
+exports.getAllMeta = function (req, res) {
+    try {
+        Image.find({},
+            'title author desc',
+            function (err, imgs) {
+                if (err){
+                    res.status(500).send('Invalid data!');
+                    return;
+                }
+                
+                res_list = []
+                for (img of imgs){
+                    res_list.push({ 
+                        id: img._id, 
+                        title: img.title,
+                        author: img.author,
+                        desc: img.desc
+                    });
+                }
+
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({ code: 0, data: { list: res_list } }));
+            });
+    } catch (e) {
+        res.status(500).send('error ' + e);
+    }
+}
+
+exports.getOneMeta = function (req, res) {
+    id = path.basename(req.path)
+    try {
+        Image.find({_id: id},
+            'title author desc',
+            function (err, imgs) {
+                if (err){
+                    res.status(500).send('Invalid data!');
+                    return;
+                }
+                
+                res.setHeader('Content-Type', 'application/json');
+                if (imgs.length > 0) {
+                    let img = imgs[0];
+                    res_data = {
+                        id: img._id, 
+                        title: img.title,
+                        author: img.author,
+                        desc: img.desc
+                    };
+                    res.send(JSON.stringify({ code: 0, data: res_data }));
+                }
+                else{
+                    res.send(JSON.stringify({ code: -1, data: {}, message: "Not found" }));
+                }
+            });
+    } catch (e) {
+        res.status(500).send('error ' + e);
+    }
+}
+
+exports.getOneRaw = function (req, res) {
     id = path.basename(req.path)
     try {
         Image.find({_id: id},
@@ -81,7 +147,6 @@ exports.getRaw = function (req, res) {
                     rawTypeEncodeType = type.split(";")
                     rawType = rawTypeEncodeType[0]
                     encodeType = rawTypeEncodeType[1]
-
 
                     const rawDataBuffer = Buffer.from(payload, encodeType);
 

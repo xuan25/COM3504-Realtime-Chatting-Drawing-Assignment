@@ -4,7 +4,10 @@ let Schema = mongoose.Schema;
 
 let Image = new Schema(
     {
-        data: {type: String, required: true},
+        title: {type: String, required: true},
+        author: {type: String, required: true},
+        desc: {type: String, required: true},
+        data: {type: String, required: true}
     }
 );
 

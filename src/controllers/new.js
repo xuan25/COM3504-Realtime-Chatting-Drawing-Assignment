@@ -1,5 +1,4 @@
 const Image = require('../models/images');
-const Room = require('../models/rooms');
 const fetch = require('node-fetch');
 
 function saveModelAsync (model) {
@@ -13,7 +12,7 @@ function saveModelAsync (model) {
     });
 }
 
-exports.newRoom = async function (req, res) {
+exports.newUpload = async function (req, res) {
     let data = req.body;
     if (data == null) {
         res.status(403).send('No data sent!')
@@ -39,24 +38,17 @@ exports.newRoom = async function (req, res) {
         }
 
         let image = new Image({
+            title: data.title,
+            author: data.author,
+            desc: data.desc,
             data: img_data
         });
 
         imageResult = await saveModelAsync(image);
         imgId = imageResult._id
 
-        let room = new Room({
-            imgId: imgId,
-            title: data.title,
-            author: data.author,
-            desc: data.desc
-        });
-
-        roomResult = await saveModelAsync(room);
-        roomId = roomResult._id
-
         res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({roomId: roomResult._id}));
+        res.send(JSON.stringify({ code:0, data: { imgId: imgId } }));
     }
     catch (e) {
         res.status(500).send('error ' + e);

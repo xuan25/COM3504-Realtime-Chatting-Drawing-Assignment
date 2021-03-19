@@ -1,28 +1,27 @@
-const Room = require('../models/rooms');
+const Image = require('../models/images');
 const path = require('path');
 
 exports.getIndex = function (req, res) {
     try {
-        Room.find({},
-            'imgId title author desc',
-            function (err, rooms) {
+        Image.find({},
+            'title author desc',
+            function (err, imgs) {
                 if (err) {
                     res.status(500).send('Invalid data!');
                     return;
                 }
                 
-                roomList = []
-                for (room of rooms){
-                    roomList.push({ 
-                        id: room._id, 
-                        imgId: room.imgId, 
-                        title: room.title, 
-                        author: room.author, 
-                        desc: room.desc 
+                imgList = []
+                for (img of imgs){
+                    imgList.push({ 
+                        id: img._id, 
+                        title: img.title, 
+                        author: img.author, 
+                        desc: img.desc 
                     });
                 }
 
-                res.render('index', { title: "Home", roomList: roomList });
+                res.render('index', { title: "Home", imgList: imgList });
             });
     } catch (e) {
         res.status(500).send('error ' + e);
@@ -32,28 +31,26 @@ exports.getIndex = function (req, res) {
 exports.searchAuthor = function (req, res) {
     q = req.query.q
     try {
-        
-        Room.find({ author: q },
-            'imgId title author desc',
-            function (err, rooms) {
+        Image.find({ author: q },
+            'title author desc',
+            function (err, imgs) {
                 if (err) {
                     res.status(500).send('Invalid data!');
                     return;
                 }
                 
-                roomList = []
-                for (room of rooms){
-                    roomList.push({ 
-                        id: room._id, 
-                        imgId: room.imgId, 
-                        title: room.title, 
-                        author: room.author, 
-                        desc: room.desc 
+                imgList = []
+                for (img of imgs){
+                    imgList.push({ 
+                        id: img._id, 
+                        title: img.title, 
+                        author: img.author, 
+                        desc: img.desc 
                     });
                 }
                 
                 res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify({ code: 0, data: { list: roomList } }));
+                res.send(JSON.stringify({ code: 0, data: { list: imgList } }));
             });
     } catch (e) {
         res.status(500).send('error ' + e);
