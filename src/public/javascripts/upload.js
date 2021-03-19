@@ -146,7 +146,7 @@ function createRoom(title, author, description, imgType, img){
   json = JSON.stringify(data);
 
   $.ajax({
-    url: "/new",
+    url: "/upload",
     type: "POST",
     data: json,
 

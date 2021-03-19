@@ -1,6 +1,10 @@
 const Image = require('../models/images');
 const fetch = require('node-fetch');
 
+exports.getIndex = function (req, res){
+    res.render('upload', { title: "Upload" });
+}
+
 function saveModelAsync (model) {
     return new Promise(function (resolve, reject) {
         model.save(function (err, result) {
@@ -12,7 +16,7 @@ function saveModelAsync (model) {
     });
 }
 
-exports.newUpload = async function (req, res) {
+exports.upload = async function (req, res) {
     let data = req.body;
     if (data == null) {
         res.status(403).send('No data sent!')

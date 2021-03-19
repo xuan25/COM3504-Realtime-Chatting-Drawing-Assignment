@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
+const uploadCon = require('../controllers/upload');
+
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('upload', { title: "Upload" });
-});
+router.get('/', uploadCon.getIndex);
+router.post('/', uploadCon.upload);
 
 module.exports = router;
