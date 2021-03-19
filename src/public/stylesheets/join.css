@@ -1,0 +1,30 @@
+.backgroundImage {
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%;
+    margin: 0px;
+    object-fit: cover;
+    padding: 0px;
+    width: 100%;
+    position: absolute;
+}
+
+.bingImageOverlay {
+    top: 0px;
+    background-position-y: 0%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%;
+    opacity: 1;
+    position: absolute;
+    transition: opacity 0.3s linear 0s;
+    width: 100%;
+    background-attachment: fixed;
+    background-image: radial-gradient(rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 100%), radial-gradient(rgba(0, 0, 0, 0) 33%, rgba(0, 0, 0, 0.3) 166%);
+}
+
+.shadow-text {
+    text-shadow: 0 0 20px #000000, 0 0 20px #7f000000;
+    /* text-shadow: -1px 1px 0 #000, 1px 1px 0 #000,1px -1px 0 #000,-1px -1px 0 #000;  */
+}
