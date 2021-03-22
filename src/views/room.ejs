@@ -10,8 +10,32 @@
 
     <script src="/javascripts/database.js"></script>
     <script src="/javascripts/idb.js"></script>
+    <script>
+        var username = 'testUser';
+        var imgId = '<%= imgId %>';
+        var roomId = '<%= roomId %>';
+    </script>
 </head>
 <body onload="init()">
-imgId = <%= imgId %>, roomId = <%= roomId %> 
+<div>
+    <p><div id="who_you_are" style="display: inline" style="height: 10vh"></div>, you are in room: <div id="in_room" style="display: inline"></div>
+    </div>
+    </p>
+    <div style="width: 100%; height: 50vh">
+        <img id="image" height="100%" src="/img/raw/<%= imgId %>">
+        <canvas id="canvas"></canvas>
+    </div>
+    <div id="history" style="height: 35vh" class="boxed scrolling" ></div>
+    <div id="input" style="height: 5vh" class=" boxed">
+        <form onsubmit="return false;" style="width: 100%">
+            <p>
+                <label for="name"> chat: </label>
+                <input type="text" id="chat_input" name="chat_input" style="width: 80%">
+                <button id="chat_send" onclick="sendChatText()">Send</button>
+            </p>
+        </form>
+    </div>
+</div>
+
 </body>
 </html>
