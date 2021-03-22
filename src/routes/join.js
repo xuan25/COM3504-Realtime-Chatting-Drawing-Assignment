@@ -4,7 +4,7 @@ var router = express.Router();
 const joinCon = require('../controllers/join');
 
 /* GET home page. */
-router.get(/^\/[0-9a-z]+\/?$/, joinCon.getJoinPage);
-router.get(/^\/[0-9a-z]+\/[0-9a-z]+\/?$/, joinCon.joinRoom);
+router.get('/:imgId', joinCon.getJoinPage);
+router.get('/:imgId/:roomId', joinCon.joinRoom);
 
 module.exports = router;
