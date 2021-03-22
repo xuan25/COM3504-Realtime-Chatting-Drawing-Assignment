@@ -11,12 +11,16 @@ let img_data_base64;
  * it initialises the interface and the expected socket messages
  * plus the associated actions
  */
-function init() {
+ $(document).ready(async () => {
+    var username = await getUsername();
+    document.getElementById('who_you_are').innerHTML = username;
+    document.getElementById('in_room').innerHTML = roomId;
+
     initChatSocket();
     socket_chat.emit('join', roomId, imgId, username);
 
     initCanvas(socket_draw, $("#image").attr('src'));
-}
+});
 
 // All unsent messages
 // TODO : Store them in IndexDB

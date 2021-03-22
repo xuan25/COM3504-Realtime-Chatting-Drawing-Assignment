@@ -1,8 +1,9 @@
 const path = require('path');
 
 exports.getJoinPage = function (req, res) {
-    id = path.basename(req.path)
-    res.render('join', { title: "Join", imgId: id });
+    imgId = path.basename(req.path)
+    roomId = req.query.roomId
+    res.render('join', { title: "Join", imgId: imgId, roomId: roomId });
 }
 
 exports.joinRoom = function (req, res) {
@@ -10,3 +11,4 @@ exports.joinRoom = function (req, res) {
     imgId = path.basename(path.dirname(req.path))
     res.render('room', { title: "Room", imgId: imgId, roomId: roomId });
 }
+

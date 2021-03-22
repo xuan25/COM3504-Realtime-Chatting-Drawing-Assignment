@@ -11,6 +11,9 @@
     <link href="/stylesheets/join.css" rel="stylesheet">
     <title><%= title %></title>
     
+    <script src="/javascripts/idb.js"></script>
+    <script src="/javascripts/database.js"></script>
+    
 </head>
 <body>
     <div class="backgroundImage" style="background-image: url(/img/raw/<%= imgId %>);"></div>
@@ -22,14 +25,21 @@
         </div>
         
         <div class="input-group mb-3 my-5">
-            <span class="input-group-text" id="inputGroup-sizing-default" >Room ID</span>
-            <input id="roomId" type="text" class="form-control" aria-label="roomId" aria-describedby="roomId" placeholder="Please input a room ID">
+            <div class="input-group mb-3">
+                <span class="input-group-text">Room ID</span>
+                <input id="roomId" type="text" class="form-control" aria-label="roomId" aria-describedby="roomId" placeholder="Please input a room ID" value="<%= roomId %>">
+                <button id="genRoomIdBtn" type="button" class="btn btn-secondary">Generate</button>
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">Username</span>
+                <input id="username" type="text" class="form-control" aria-label="username" aria-describedby="username" placeholder="Please input a username">
+                <button id="genUsernameBtn" type="button" class="btn btn-secondary">Generate</button>
+            </div>
             <input id="imgId" type="text" class="form-control" aria-label="imgId" aria-describedby="imgId" hidden value="<%= imgId %>">
         </div>
         
         <div class="d-flex flex-row justify-content-center my-5">
             <a class="btn btn-light w-100 mx-2" type="button" href="/">Home</a>
-            
             <button id="joinBtn" class="btn btn-success w-100 mx-2" type="button">Join</button>
         </div>       
     </div>
