@@ -13,13 +13,19 @@ let img_data_base64;
  */
  $(document).ready(async () => {
     var username = await getUsername();
-    document.getElementById('who_you_are').innerHTML = username;
-    document.getElementById('in_room').innerHTML = roomId;
-
-    initChatSocket();
-    socket_chat.emit('join', roomId, imgId, username);
-
-    initCanvas(socket_draw, $("#image").attr('src'));
+    if(username){
+        document.getElementById('who_you_are').innerHTML = username;
+        document.getElementById('in_room').innerHTML = roomId;
+    
+        initChatSocket();
+        socket_chat.emit('join', roomId, imgId, username);
+    
+        initCanvas(socket_draw, $("#image").attr('src'));
+    }
+    else{
+        // Redirect to join page if username is not avaliable
+        window.location.href=`/join/${imgId}/?roomId=${roomId}`
+    }
 });
 
 // All unsent messages
