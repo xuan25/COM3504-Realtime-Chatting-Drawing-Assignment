@@ -6,27 +6,40 @@ let userId;
 let color = 'red', thickness = 4;
 
 /**
- * it inits the image canvas to draw on. It sets up the events to respond to (click, mouse on, etc.)
- * it is also the place where the data should be sent  via socket.io
- * @param sckt the open socket to register events on
- * @param imageUrl teh image url to download
+ * Clear local canvas
  */
-function initCanvas(sckt, imageUrl) {
-    socket = sckt;
+function clearCanvas(){
+    let canvas_jq = $('#canvas');
+    let canvas = document.getElementById('canvas');
+    let ctx = canvas.getContext('2d');
+    let img = document.getElementById('image');
+    
+    let c_width = canvas_jq.width();
+    let c_height = canvas_jq.height();
+    ctx.clearRect(0, 0, c_width, c_height);
+    
+    paintImgToCanvas(img, canvas, ctx);
+}
+
+
+/**
+ * it inits the image canvas to draw on. It sets up the events to respond to (click, mouse on, etc.)
+ * @param onDrawingCallback Callback function when user is drawing.
+ */
+function initCanvas(onDrawingCallback) {
     let flag = false,
         prevX, prevY, currX, currY = 0;
-    let canvas = $('#canvas');
-    let cvx = document.getElementById('canvas');
+    let canvas_jq = $('#canvas');
+    let canvas = document.getElementById('canvas');
     let img = document.getElementById('image');
-    let ctx = cvx.getContext('2d');
-    img.src = imageUrl;
+    let ctx = canvas.getContext('2d');
 
     // event on the canvas when the mouse is on it
-    canvas.on('mousemove mousedown mouseup mouseout', function (e) {
+    canvas_jq.on('mousemove mousedown mouseup mouseout', function (e) {
         prevX = currX;
         prevY = currY;
-        currX = e.clientX - canvas.position().left;
-        currY = e.clientY - canvas.position().top;
+        currX = e.clientX - canvas_jq.position().left;
+        currY = e.clientY - canvas_jq.position().top;
         if (e.type === 'mousedown') {
             flag = true;
         }
@@ -37,26 +50,12 @@ function initCanvas(sckt, imageUrl) {
         if (e.type === 'mousemove') {
             if (flag) {
                 drawOnCanvas(ctx, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
-                // @todo if you draw on the canvas, you may want to let everyone know via socket.io (socket.emit...)  by sending them
-                // room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness
+                
+                data = { canvas: { width:canvas.width, height:canvas.height }, paths: [{ x1:prevX, y1:prevY, x2:currX, y2:currY }], color:color, thickness:thickness }
+                onDrawingCallback(data)
             }
         }
     });
-
-    // this is code left in case you need to  provide a button clearing the canvas (it is suggested that you implement it)
-    $('.canvas-clear').on('click', function (e) {
-        let c_width = canvas.width();
-        let c_height = canvas.height();
-        ctx.clearRect(0, 0, c_width, c_height);
-        // @todo if you clear the canvas, you want to let everyone know via socket.io (socket.emit...)
-
-    });
-
-    // @todo here you want to capture the event on the socket when someone else is drawing on their canvas (socket.on...)
-    // I suggest that you receive userId, canvasWidth, canvasHeight, x1, y21, x2, y2, color, thickness
-    // and then you call
-    //     let ctx = canvas[0].getContext('2d');
-    //     drawOnCanvas(ctx, canvasWidth, canvasHeight, x1, y21, x2, y2, color, thickness)
 
     // this is called when the src of the image is loaded
     // this is an async operation as it may take time
@@ -66,25 +65,41 @@ function initCanvas(sckt, imageUrl) {
         let poll = setInterval(function () {
             if (img.naturalHeight && img.clientWidth > 0) {
                 clearInterval(poll);
-                // resize the canvas
-                let ratioX=1;
-                let ratioY=1;
-                // if the screen is smaller than the img size we have to reduce the image to fit
-                if (img.clientWidth>window.innerWidth)
-                    ratioX=window.innerWidth/img.clientWidth;
-                if (img.clientHeight> window.innerHeight)
-                    ratioY= img.clientHeight/window.innerHeight;
-                let ratio= Math.min(ratioX, ratioY);
-                // resize the canvas to fit the screen and the image
-                cvx.width = canvas.width = img.clientWidth*ratio;
-                cvx.height = canvas.height = img.clientHeight*ratio;
-                // draw the image onto the canvas
-                drawImageScaled(img, cvx, ctx);
-                // hide the image element as it is not needed
-                img.style.display = 'none';
+                paintImgToCanvas(img, canvas, ctx);
             }
         }, 10);
     });
+
+    // If the image has already been loaded.
+    if (img.naturalHeight && img.clientWidth > 0) {
+        paintImgToCanvas(img, canvas, ctx);
+    }
+}
+
+function paintImgToCanvas(img, cvx, ctx){
+    img.style.display = 'block';
+
+    // resize the canvas
+    let ratioX=1;
+    let ratioY=1;
+    // if the screen is smaller than the img size we have to reduce the image to fit
+    if (img.clientWidth > window.innerWidth){
+        ratioX = window.innerWidth/img.clientWidth;
+    } 
+    if (img.clientHeight > window.innerHeight){
+        ratioY = img.clientHeight/window.innerHeight;
+    }
+        
+    let ratio = Math.min(ratioX, ratioY);
+    // resize the canvas to fit the screen and the image
+    
+    cvx.width = img.clientWidth*ratio;
+    cvx.height = img.clientHeight*ratio;
+
+    // draw the image onto the canvas
+    drawImageScaled(img, cvx, ctx);
+
+    img.style.display = 'none';
 }
 
 /**

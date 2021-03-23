@@ -1,8 +1,11 @@
 let socket_chat=io.connect('/chat');
-let socket_draw=null;
+let socket_draw=io.connect('/draw');
 
-let isJoined = false
-let isOnline = false
+let isChatJoined = false
+let isChatOnline = false
+
+let isDrawJoined = false
+let isDrawOnline = false
 
 let img_data_base64;
 
@@ -20,13 +23,34 @@ let img_data_base64;
         initChatSocket();
         socket_chat.emit('join', roomId, imgId, username);
     
-        initCanvas(socket_draw, $("#image").attr('src'));
+        initDrawSocket();
+        socket_draw.emit('join', roomId, imgId, username);
+        initCanvas(onDrawing);
+        
+        $('#canvas-clear').on('click', function (e) {
+            cls();
+        });
     }
     else{
         // Redirect to join page if username is not avaliable
         window.location.href=`/join/${imgId}/?roomId=${roomId}`
     }
 });
+
+/**
+ * Clear local canvas and boardcast a cls event
+ */
+function cls(){
+    clearCanvas();
+    socket_draw.emit('cls');
+}
+
+/**
+ * Clear local canvas and boardcast a cls event
+ */
+function onDrawing(data){
+    socket_draw.emit('post-path', data);
+}
 
 // All unsent messages
 // TODO : Store them in IndexDB
@@ -38,10 +62,10 @@ var unsent_msgs = {}
  */
 function initChatSocket() {
     socket_chat.on('joined', async function () {
-        isOnline = true
+        isChatOnline = true
         // it enters the chat
-        if (!isJoined){
-            isJoined = true
+        if (!isChatJoined){
+            isChatJoined = true
 
             let chatHistories = await getChatHistories(roomId+imgId)
             for (let chatHistory of chatHistories){
@@ -91,15 +115,67 @@ function initChatSocket() {
         await storeChatHistory(roomId+imgId, username, msg_id, message)
     });
     socket_chat.on('connect', function () {
-        if(isJoined){
+        if(isChatJoined){
             writeOnChatHistory('<b>Reconnected to the server.</b>');
             socket_chat.emit('join', roomId, imgId, username);
         }
     });
     socket_chat.on('disconnect', function () {
-        if(isJoined){
-            isOnline = false
+        if(isChatJoined){
+            isChatOnline = false
             writeOnChatHistory('<b>The connection was lost.</b>');
+        }
+    });
+}
+
+
+function initDrawSocket() {
+    socket_draw.on('joined', async function () {
+        isDrawOnline = true
+        // it enters the chat
+        if (!isDrawJoined){
+            isDrawJoined = true
+        }
+        else{
+            writeOnChatHistory('<b>Rejoined the room. (drawing)</b>');
+        }
+
+        // Post all unsent drawings
+        // If the server is disconnected, wait for all users to reconnect.
+        // setTimeout(function(){
+        //     for (var msg_id in unsent_msgs) {
+        //         let message = unsent_msgs[msg_id];
+        //         if(message){
+        //             socket_draw.emit('post-chat', msg_id, message);
+        //         }
+        //     }
+        // }, 1000);
+    });
+    socket_draw.on('recieve-path', function (data, username) {
+        let cvx = document.getElementById('canvas');
+        let ctx = cvx.getContext('2d');
+        drawOnCanvas(ctx, data.canvas.width, data.canvas.height, data.paths[0].x1, data.paths[0].y1, data.paths[0].x2, data.paths[0].y2, data.color, data.thickness)
+    });
+
+    socket_draw.on('connect', function () {
+        if(isDrawJoined){
+            writeOnChatHistory('<b>Reconnected to the server. (drawing)</b>');
+            socket_draw.emit('join', roomId, imgId, username);
+        }
+    });
+
+    socket_draw.on('cls', function () {
+        console.log(isDrawJoined);
+        if(isDrawJoined){
+            
+            clearCanvas();
+        }
+    });
+
+    socket_draw.on('disconnect', function () {
+        if(isDrawJoined){
+            isDrawOnline = false
+            writeOnChatHistory('<b>The connection was lost. (drawing)</b>');
         }
     });
 }
@@ -114,7 +190,7 @@ function sendChatText() {
 
     unsent_msgs[msg_id] = message
 
-    if(isOnline){
+    if(isChatOnline){
         socket_chat.emit('post-chat', msg_id, message);
     }
     

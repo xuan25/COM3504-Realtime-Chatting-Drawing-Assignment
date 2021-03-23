@@ -2,7 +2,7 @@ exports.init = function(io) {
   const socket_info_dict = {}
 
   // the chat namespace
-  const chat= io.of('/chat').on('connection', function (socket) {
+  const chat = io.of('/chat').on('connection', function (socket) {
     try {
       /**
        * it creates or joins a room
@@ -43,4 +43,59 @@ exports.init = function(io) {
     catch (e) {
     }
   });
+
+  const socket_draw_info_dict = {}
+
+  const draw= io.of('/draw').on('connection', function (socket) {
+    try{
+
+      socket.on('join', function (room, image_uri, username) {
+        socket_room = room + ' @ ' + image_uri
+        socket_draw_info_dict[socket.id] = { "socket_room": socket_room, "username": username }
+
+        socket.join(socket_room);
+        socket.emit('joined');
+        // socket.broadcast.to(socket_room).emit('new-member', username);
+      });
+
+      socket.on('post-path', function (data) {
+        socket_info = socket_draw_info_dict[socket.id]
+        if (!socket_info){
+          return
+        }
+        socket_room = socket_info["socket_room"]
+        username = socket_info["username"]
+
+        // socket.emit('posted-path', msg_id);
+        socket.broadcast.to(socket_room).emit('recieve-path', data, username);
+      });
+
+      socket.on('cls', function(){
+        socket_info = socket_draw_info_dict[socket.id]
+        if (!socket_info){
+          return
+        }
+        socket_room = socket_info["socket_room"]
+        username = socket_info["username"]
+        
+        delete socket_info_dict[socket.id]
+        socket.broadcast.to(socket_room).emit('cls');
+      });
+
+      socket.on('disconnect', function(){
+        socket_info = socket_draw_info_dict[socket.id]
+        if (!socket_info){
+          return
+        }
+        // socket_room = socket_info["socket_room"]
+        // username = socket_info["username"]
+        
+        delete socket_draw_info_dict[socket.id]
+        // socket.broadcast.to(socket_room).emit('member-left', username);
+      });
+    }
+    catch (e) {
+    }
+  });
+
 }
