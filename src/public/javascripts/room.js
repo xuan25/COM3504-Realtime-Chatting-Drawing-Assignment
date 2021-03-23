@@ -53,7 +53,7 @@ function onDrawing(data){
 }
 
 // All unsent messages
-// TODO : Store them in IndexDB
+// TODO : Store them into IndexDB (unsent)
 var unsent_msgs = {}
 
 
@@ -66,13 +66,9 @@ function initChatSocket() {
         // it enters the chat
         if (!isChatJoined){
             isChatJoined = true
-
-            let chatHistories = await getChatHistories(roomId+imgId)
-            for (let chatHistory of chatHistories){
-                username = chatHistory.username
-                message = chatHistory.message
-                writeOnChatHistory('<b>' + username + ':</b> ' + message);
-            }
+            
+            // TODO : Retrive history from db
+            
         }
         else{
             writeOnChatHistory('<b>Rejoined the room.</b>');
@@ -101,18 +97,19 @@ function initChatSocket() {
         // message post succeed
         message = unsent_msgs[msg_id]
         delete unsent_msgs[msg_id]
-        // TODO : Store them in IndexDB
+        
         let historyEle = document.getElementById(msg_id);
         historyEle.parentNode.removeChild(historyEle);
 
         writeOnChatHistory('<b>Me:</b> ' + message);
-        await storeChatHistory(roomId+imgId, 'Me', msg_id, message)
+
+        // TODO : Store them into IndexDB (history)
     });
     socket_chat.on('recieve-chat', async function (username, msg_id, message) {
         // a message is received
-        // TODO : Store them in IndexDB
         writeOnChatHistory('<b>' + username + ':</b> ' + message);
-        await storeChatHistory(roomId+imgId, username, msg_id, message)
+
+        // TODO : Store them into IndexDB (history)
     });
     socket_chat.on('connect', function () {
         if(isChatJoined){

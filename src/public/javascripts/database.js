@@ -14,21 +14,8 @@ async function initDatabase() {
         if (!upgradeDb.objectStoreNames.contains(JOIN_STORE_NAME)) {
           let store = upgradeDb.createObjectStore(JOIN_STORE_NAME);
         }
-
-        // chat
-        if (!upgradeDb.objectStoreNames.contains(CHAT_HISTORY_STORE_NAME)) {
-          let chatHistoryDB = upgradeDb.createObjectStore(
-            CHAT_HISTORY_STORE_NAME,
-            {
-              keyPath: "id",
-              autoIncrement: true,
-            }
-          );
-          chatHistoryDB.createIndex("roomId", "roomId", {
-            unique: false,
-            multiEntry: true,
-          });
-        }
+        
+        // TODO : Init chat db
 
       },
     });
@@ -72,41 +59,4 @@ async function getUsername() {
 
 // -------- chat --------
 
-async function storeChatHistory(roomId, username, msgId, message) {
-  if (!db) await initDatabase();
-  if (db) {
-    try {
-      let tx = await db.transaction(CHAT_HISTORY_STORE_NAME, "readwrite");
-      let store = await tx.objectStore(CHAT_HISTORY_STORE_NAME);
-      await store.put({
-        roomId: roomId,
-        username: username,
-        msgId: msgId,
-        message: message,
-      });
-      await tx.complete;
-    } catch (error) {
-      console.log("IndexDB not available");
-    }
-  } else {
-    console.log("IndexDB not available");
-  }
-}
-
-async function getChatHistories(roomId) {
-  if (!db) await initDatabase();
-  if (db) {
-    try {
-      let tx = await db.transaction(CHAT_HISTORY_STORE_NAME, "readonly");
-      let store = await tx.objectStore(CHAT_HISTORY_STORE_NAME);
-      let index = await store.index("roomId");
-      let histories = await index.getAll(IDBKeyRange.only(roomId));
-      await tx.complete;
-      return histories;
-    } catch (error) {
-      console.log(error);
-    }
-  } else {
-    console.log("IndexDB not available");
-  }
-}
+// TODO : Store and retrive function
