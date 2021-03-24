@@ -17,8 +17,8 @@ let img_data_base64;
  $(document).ready(async () => {
     var username = await getUsername();
     if(username){
-        document.getElementById('who_you_are').innerHTML = username;
-        document.getElementById('in_room').innerHTML = roomId;
+        document.getElementById('username').innerHTML = username;
+        document.getElementById('roomId').innerHTML = roomId;
     
         initChatSocket();
         socket_chat.emit('join', roomId, imgId, username);
@@ -68,10 +68,10 @@ function initChatSocket() {
             isChatJoined = true
             
             // TODO : Retrive history from db
-            
+
         }
         else{
-            writeOnChatHistory('<b>Rejoined the room.</b>');
+            writeInfo('<b>Rejoined the room.</b>');
         }
 
         // Post all unsent messages
@@ -87,11 +87,11 @@ function initChatSocket() {
     });
     socket_chat.on('new-member', function (userId) {
         // notifies that someone has joined the room
-        writeOnChatHistory('<b>' + userId + '</b>' + ' has joined the room');
+        writeInfo('<b>' + userId + '</b>' + ' has joined the room');
     });
     socket_chat.on('member-left', function (userId) {
         // notifies that someone has left the room
-        writeOnChatHistory('<b>' + userId + '</b>' + ' has left the room');
+        writeInfo('<b>' + userId + '</b>' + ' has left the room');
     });
     socket_chat.on('posted-chat', async function (msg_id) {
         // message post succeed
@@ -101,26 +101,26 @@ function initChatSocket() {
         let historyEle = document.getElementById(msg_id);
         historyEle.parentNode.removeChild(historyEle);
 
-        writeOnChatHistory('<b>Me:</b> ' + message);
+        writeOnChatHistory(msg_id, 'Me', message, true)
 
         // TODO : Store them into IndexDB (history)
     });
     socket_chat.on('recieve-chat', async function (username, msg_id, message) {
         // a message is received
-        writeOnChatHistory('<b>' + username + ':</b> ' + message);
+        writeOnChatHistory(msg_id, username, message, false);
 
         // TODO : Store them into IndexDB (history)
     });
     socket_chat.on('connect', function () {
         if(isChatJoined){
-            writeOnChatHistory('<b>Reconnected to the server.</b>');
+            writeInfo('<b>Reconnected to the server.</b>');
             socket_chat.emit('join', roomId, imgId, username);
         }
     });
     socket_chat.on('disconnect', function () {
         if(isChatJoined){
             isChatOnline = false
-            writeOnChatHistory('<b>The connection was lost.</b>');
+            writeInfo('<b>The connection was lost.</b>');
         }
     });
 }
@@ -134,7 +134,7 @@ function initDrawSocket() {
             isDrawJoined = true
         }
         else{
-            writeOnChatHistory('<b>Rejoined the room. (drawing)</b>');
+            writeInfo('<b>Rejoined the room. (drawing)</b>');
         }
 
         // Post all unsent drawings
@@ -156,7 +156,7 @@ function initDrawSocket() {
 
     socket_draw.on('connect', function () {
         if(isDrawJoined){
-            writeOnChatHistory('<b>Reconnected to the server. (drawing)</b>');
+            writeInfo('<b>Reconnected to the server. (drawing)</b>');
             socket_draw.emit('join', roomId, imgId, username);
         }
     });
@@ -172,7 +172,7 @@ function initDrawSocket() {
     socket_draw.on('disconnect', function () {
         if(isDrawJoined){
             isDrawOnline = false
-            writeOnChatHistory('<b>The connection was lost. (drawing)</b>');
+            writeInfo('<b>The connection was lost. (drawing)</b>');
         }
     });
 }
@@ -182,7 +182,7 @@ function initDrawSocket() {
  * and sends the message via  socket
  */
 function sendChatText() {
-    let message = document.getElementById('chat_input').value;
+    let message = document.getElementById('chat-input').value;
     let msg_id = 'msg_' + Math.round(Math.random() * (2 ** 53))
 
     unsent_msgs[msg_id] = message
@@ -192,7 +192,7 @@ function sendChatText() {
     }
     
     clearInputBox();
-    writeOnChatHistoryWithId('<b>Me:</b> ' + message + ' <b>(unsent)</b>', msg_id);
+    writeOnChatHistory(msg_id, 'Me', message + " <b>(unsent)</b>", true);
 }
 
 
@@ -201,24 +201,62 @@ function sendChatText() {
  * this is to be called when the socket receives the chat message (socket.on ('message'...)
  * @param text: the text to append
  */
-function writeOnChatHistory(text) {
-    if (text==='') return;
-    let history = document.getElementById('history');
-    let paragraph = document.createElement('p');
-    paragraph.innerHTML = text;
-    history.appendChild(paragraph);
+function writeOnChatHistory(msgId, username, message, isMe) {
+    if (isMe){
+        $('#history').append(
+            $(`
+                <div id="${msgId}" class="m-1 ms-auto">
+                    <div class="text-end">
+                        ${username}
+                    </div>
+                    <div class="card ms-auto chat-msg-me">
+                        <div class="card-body px-2 py-1">
+                            <div>
+                                ${message}
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+            `)
+        )
+    }
+    else{
+        $('#history').append(
+            $(`
+                <div id="${msgId}" class="m-1 me-auto">
+                    <div class="text-start">
+                        ${username}
+                    </div>
+                    <div class="card me-auto chat-msg-light">
+                        <div class="card-body px-2 py-1">
+                            <div>
+                                ${message}
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+            `)
+        )
+    }
+
     // scroll to the last element
+    let history = document.getElementById('history');
     history.scrollTop = history.scrollHeight;
 }
 
-function writeOnChatHistoryWithId(text, id) {
-    if (text==='') return;
-    let history = document.getElementById('history');
-    let paragraph = document.createElement('p');
-    paragraph.id = id
-    paragraph.innerHTML = text;
-    history.appendChild(paragraph);
+function writeInfo(message){
+    $('#history').append(
+        $(`
+            <div class="m-1 d-flex justify-content-center">
+                <div class="rounded px-3 py-1 info-msg">
+                    ${message}
+                </div>
+            </div>
+        `)
+    )
+
     // scroll to the last element
+    let history = document.getElementById('history');
     history.scrollTop = history.scrollHeight;
 }
 
@@ -226,5 +264,5 @@ function writeOnChatHistoryWithId(text, id) {
  * clearInputBox
  */
 function clearInputBox() {
-    document.getElementById('chat_input').value = '';
+    document.getElementById('chat-input').value = '';
 }

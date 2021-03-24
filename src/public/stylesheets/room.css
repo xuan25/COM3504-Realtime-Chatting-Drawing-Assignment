@@ -1,0 +1,16 @@
+.chat-bg {
+    background-color: rgb(237, 237, 237);
+}
+
+.chat-msg-light {
+    background-color: rgb(255, 255, 255);
+}
+
+.chat-msg-me {
+    background-color: rgb(160, 234, 111);
+}
+
+
+.info-msg {
+    background-color: rgb(211, 211, 211);
+}
