@@ -41,7 +41,7 @@ let img_data_base64;
  * Clear local canvas and boardcast a cls event
  */
 function cls(){
-    clearCanvas();
+    clearPaths();
     socket_draw.emit('cls');
 }
 
@@ -149,9 +149,10 @@ function initDrawSocket() {
         // }, 1000);
     });
     socket_draw.on('recieve-path', function (data, username) {
-        let cvx = document.getElementById('canvas');
-        let ctx = cvx.getContext('2d');
-        drawOnCanvas(ctx, data.canvas.width, data.canvas.height, data.paths[0].x1, data.paths[0].y1, data.paths[0].x2, data.paths[0].y2, data.color, data.thickness)
+        pushPath(data)
+        // let cvx = document.getElementById('canvas');
+        // let ctx = cvx.getContext('2d');
+        // drawOnCanvas(ctx, data.canvas.width, data.canvas.height, data.paths[0].x1, data.paths[0].y1, data.paths[0].x2, data.paths[0].y2, data.color, data.thickness)
     });
 
     socket_draw.on('connect', function () {
@@ -165,7 +166,7 @@ function initDrawSocket() {
         console.log(isDrawJoined);
         if(isDrawJoined){
             
-            clearCanvas();
+            clearPaths();
         }
     });
 

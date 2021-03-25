@@ -5,20 +5,36 @@ let room;
 let userId;
 let color = 'red', thickness = 4;
 
-/**
- * Clear local canvas
- */
-function clearCanvas(){
+let pathBuffer = []
+
+function pushPath(data){
+    pathBuffer.push(data)
+
+    let cvx = document.getElementById('canvas');
+    let ctx = cvx.getContext('2d');
+
+    drawOnCanvas(ctx, data.canvas.width, data.canvas.height, data.paths[0].x1, data.paths[0].y1, data.paths[0].x2, data.paths[0].y2, data.color, data.thickness)
+}
+
+function redrawPaths(){
+    let cvx = document.getElementById('canvas');
+    let ctx = cvx.getContext('2d');
+        
+    pathBuffer.forEach(data => {
+        drawOnCanvas(ctx, data.canvas.width, data.canvas.height, data.paths[0].x1, data.paths[0].y1, data.paths[0].x2, data.paths[0].y2, data.color, data.thickness)
+    });
+}
+
+function clearPaths(){
+    pathBuffer = []
+
     let canvas_jq = $('#canvas');
     let canvas = document.getElementById('canvas');
     let ctx = canvas.getContext('2d');
-    let img = document.getElementById('image');
     
     let c_width = canvas_jq.width();
     let c_height = canvas_jq.height();
     ctx.clearRect(0, 0, c_width, c_height);
-    
-    paintImgToCanvas(img, canvas, ctx);
 }
 
 
@@ -29,17 +45,16 @@ function clearCanvas(){
 function initCanvas(onDrawingCallback) {
     let flag = false,
         prevX, prevY, currX, currY = 0;
-    let canvas_jq = $('#canvas');
-    let canvas = document.getElementById('canvas');
-    let img = document.getElementById('image');
-    let ctx = canvas.getContext('2d');
+    let canvasJq = $('#canvas');
+    let canvasEle = document.getElementById('canvas');
+    let imgEle = document.getElementById('image');
 
     // event on the canvas when the mouse is on it
-    canvas_jq.on('mousemove mousedown mouseup mouseout', function (e) {
+    canvasJq.on('mousemove mousedown mouseup mouseout', function (e) {
         prevX = currX;
         prevY = currY;
-        currX = e.clientX - canvas_jq.position().left;
-        currY = e.clientY - canvas_jq.position().top;
+        currX = e.clientX - canvasJq.position().left;
+        currY = e.clientY - canvasJq.position().top;
         if (e.type === 'mousedown') {
             flag = true;
         }
@@ -48,79 +63,39 @@ function initCanvas(onDrawingCallback) {
         }
         // if the flag is up, the movement of the mouse draws on the canvas
         if (e.type === 'mousemove') {
-            if (flag) {
-                drawOnCanvas(ctx, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
-                
-                data = { canvas: { width:canvas.width, height:canvas.height }, paths: [{ x1:prevX, y1:prevY, x2:currX, y2:currY }], color:color, thickness:thickness }
-                onDrawingCallback(data)
+            if (flag) {                
+                data = { canvas: { width:canvasEle.width, height:canvasEle.height }, paths: [{ x1:prevX, y1:prevY, x2:currX, y2:currY }], color:color, thickness:thickness };
+                pushPath(data);
+                onDrawingCallback(data);
             }
         }
     });
 
     // this is called when the src of the image is loaded
     // this is an async operation as it may take time
-    img.addEventListener('load', () => {
-        // it takes time before the image size is computed and made available
-        // here we wait until the height is set, then we resize the canvas based on the size of the image
-        let poll = setInterval(function () {
-            if (img.naturalHeight && img.clientWidth > 0) {
-                clearInterval(poll);
-                paintImgToCanvas(img, canvas, ctx);
-            }
-        }, 10);
+    imgEle.addEventListener('load', () => {
+        repositionCanvas();
+    });
+
+    window.addEventListener('resize', () => {
+        repositionCanvas();
     });
 
     // If the image has already been loaded.
-    if (img.naturalHeight && img.clientWidth > 0) {
-        paintImgToCanvas(img, canvas, ctx);
+    if (imgEle.naturalHeight && imgEle.clientWidth > 0) {
+        repositionCanvas();
     }
 }
 
-function paintImgToCanvas(img, cvx, ctx){
-    img.style.display = 'block';
-
-    // resize the canvas
-    let ratioX=1;
-    let ratioY=1;
-    // if the screen is smaller than the img size we have to reduce the image to fit
-    if (img.clientWidth > window.innerWidth){
-        ratioX = window.innerWidth/img.clientWidth;
-    } 
-    if (img.clientHeight > window.innerHeight){
-        ratioY = img.clientHeight/window.innerHeight;
-    }
-        
-    let ratio = Math.min(ratioX, ratioY);
-    // resize the canvas to fit the screen and the image
+function repositionCanvas(){
+    let canvas = document.getElementById('canvas');
+    let img = document.getElementById('image');
     
-    cvx.width = img.clientWidth*ratio;
-    cvx.height = img.clientHeight*ratio;
+    canvas.width = img.clientWidth;
+    canvas.height = img.clientHeight;
 
-    // draw the image onto the canvas
-    drawImageScaled(img, cvx, ctx);
-
-    img.style.display = 'none';
+    redrawPaths();
 }
-
-/**
- * called when it is required to draw the image on the canvas. We have resized the canvas to the same image size
- * so ti is simpler to draw later
- * @param img
- * @param canvas
- * @param ctx
- */
-function drawImageScaled(img, canvas, ctx) {
-    // get the scale
-    let scale = Math.min(canvas.width / img.width, canvas.height / img.height);
-    // get the top left position of the image
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    let x = (canvas.width / 2) - (img.width / 2) * scale;
-    let y = (canvas.height / 2) - (img.height / 2) * scale;
-    ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-
-
-}
-
 
 /**
  * this is called when we want to display what we (or any other connected via socket.io) draws on the canvas
