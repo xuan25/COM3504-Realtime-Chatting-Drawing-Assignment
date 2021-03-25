@@ -193,6 +193,8 @@ function sendChatText() {
     
     clearInputBox();
     writeOnChatHistory(msg_id, 'Me', message + " <b>(unsent)</b>", true);
+
+    return false
 }
 
 
