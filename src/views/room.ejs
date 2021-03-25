@@ -5,6 +5,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <link rel='stylesheet' href='/stylesheets/style.css'/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 
     <script src="/javascripts/idb.js"></script>
     <script src="/javascripts/database.js"></script>
@@ -12,32 +13,45 @@
     <script src="/javascripts/room.js"></script>
     <script src="/javascripts/canvas.js"></script>
 
+    <link rel='stylesheet' href='/stylesheets/room.css'/>
+
     <script>
         var imgId = '<%= imgId %>';
         var roomId = '<%= roomId %>';
     </script>
 </head>
 <body>
-    <button id="canvas-clear">Clear</button>
 <div>
-    <p><div id="who_you_are" style="display: inline" style="height: 10vh"></div>, you are in room: <div id="in_room" style="display: inline"></div>
+    <div class="d-flex flex-row align-items-center" style="height: 5vh">
+        <div class="ms-2">
+            Hi,
+            <span id="username"></span>
+            , you are in room: 
+            <span id="roomId"></span>
+        </div>
+        <button id="share-copy" type="button" class="btn btn-success btn-sm ms-2">Copy share link</button>
+        <button id="canvas-clear" type="button" class="btn btn-danger btn-sm ms-2">Clear canvas</button>
     </div>
-    </p>
-    <div style="width: 100%; height: 50vh">
-        <img id="image" height="100%" src="/img/raw/<%= imgId %>">
-        <canvas id="canvas"></canvas>
+    <div class="p-2 d-flex justify-content-center" style="height: 50vh">
+        <div>
+            <img id="image" height="100%" src="/img/raw/<%= imgId %>">
+            <canvas id="canvas"></canvas>
+        </div> 
     </div>
-    <div id="history" style="height: 35vh" class="boxed scrolling" ></div>
-    <div id="input" style="height: 5vh" class=" boxed">
-        <form onsubmit="return false;" style="width: 100%">
-            <p>
-                <label for="name"> chat: </label>
-                <input type="text" id="chat_input" name="chat_input" style="width: 80%">
-                <button id="chat_send" onclick="sendChatText()">Send</button>
-            </p>
+    <div id="history" style="height: 35vh;" class="w-100 p-3 overflow-auto d-flex flex-column chat-bg">
+    
+    </div>
+    <div id="input" style="height: 5vh" class="w-100 p-3">
+        <form class="d-flex justify-content-center align-items-center" onsubmit="sendChatText(); return false;">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="chat-input-addon">Chat:</span>
+                <input type="text" id="chat-input" name="chat-input" class="form-control" placeholder="Please input your chat message" aria-label="Please input your chat message" aria-describedby="chat-input-addon">
+                <button type="submit" id="chat-send" class="btn btn-primary">Send</button>
+            </div>
         </form>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
 </body>
 </html>
