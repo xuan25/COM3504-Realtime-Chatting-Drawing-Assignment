@@ -1,5 +1,3 @@
-let cache= null;
-
 var CACHE_NAME = 'com3504_cache';
 var filesToCache = [
     // add the files you want to cache here 
@@ -19,13 +17,12 @@ var filesToCache = [
 /**
  * installation event: it adds all the files to be cached
  */
-self.addEventListener('install', function (e) {
+self.addEventListener('install', function (event) {
     console.log('[ServiceWorker] Install');
-    e.waitUntil(
-        caches.open(CACHE_NAME).then(function (c) {
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(function (cache) {
             console.log('[ServiceWorker] Caching app shell');
-            cache = c;
-            return c.addAll(filesToCache);
+            return cache.addAll(filesToCache);
         })
     );
 });
@@ -59,38 +56,45 @@ self.addEventListener('install', function (e) {
 // });
 
 // when the worker receives a fetch request
-self.addEventListener('fetch', function(e) {
-    console.log('[Service Worker] Fetch', e.request.url);
-    if (e.request.url.indexOf('socket.io') > -1){
+self.addEventListener('fetch', function(event) {
+    if (event.request.url.indexOf('socket.io/?') > -1){
         // Bypass socket io
-        e.respondWith(fetch(e.request));
+        event.respondWith(fetch(event.request));
     }
     else{
+        console.log('[Service Worker] Fetch', event.request.url);
         /*
          * The app is asking for app shell files. In this scenario the app uses the
          * "Cache, falling back to the network" offline strategy:
          * https://jakearchibald.com/2014/offline-cookbook/#cache-falling-back-to-network
          */
-        e.respondWith(
-            caches.match(e.request).then(function (response) {
-                return response
-                    || fetch(e.request)
+        event.respondWith(
+            caches.match(event.request)
+                .then(function (response) {
+                    // Cache hit - return response
+                    if (response) {
+                        return response;
+                    }
+
+                    // Request
+                    return fetch(event.request)
                         .then(function (response) {
-                            // note if network error happens, fetch does not return
-                            // an error. it just returns response not ok
-                            // https://www.tjvantoll.com/2015/09/13/fetch-and-errors/
-                            if (!response.ok || response.statusCode > 299) {
+                            // Check if we received a valid response
+                            if (!response || response.status !== 200) {
                                 console.log(`Response error: [${response.status}]: ${response.statusText}`);
-                                console.log(response);
-                            } else {
-                                cache.add(e.request.url);
-                                return response;
+                                return response
                             }
-                        })
-                        .catch(function (err) {
-                            console.log("Fetch error: " + err);
-                        })
-            })
+
+                            var responseToCache = response.clone();
+
+                            // cache.add(e.request.url);
+                            caches.open(CACHE_NAME)
+                                .then(function(cache) {
+                                    cache.put(event.request, responseToCache);
+                                });
+                            return response;
+                        });
+                })
         );
     }
     
