@@ -15,6 +15,18 @@ let img_data_base64;
  * plus the associated actions
  */
  $(document).ready(async () => {
+
+    $('#share-copy').click(() => {
+        var aux = document.createElement("input"); 
+        aux.setAttribute("value", window.location.href); 
+        document.body.appendChild(aux); 
+        aux.select();
+        document.execCommand("copy"); 
+        document.body.removeChild(aux);
+
+        alert("The share link has been copied to your clipboard.");
+    });
+
     var username = await getUsername();
     if(username){
         document.getElementById('username').innerHTML = username;
