@@ -254,6 +254,11 @@ function initDrawSocket() {
 function sendChatText() {
     // get message
     let message = document.getElementById('chat-input').value;
+
+    if (message === ""){
+        return;
+    }
+
     let msg_id = 'msg_' + Math.round(Math.random() * (2 ** 53))
 
     // Store to unsent_msgs
