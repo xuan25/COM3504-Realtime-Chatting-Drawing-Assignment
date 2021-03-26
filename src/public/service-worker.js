@@ -13,7 +13,7 @@ var filesToCache = [
     '/stylesheets/room.css',
     '/stylesheets/style.css',
     '/join/offline/',
-    '/join/offline/offline/'
+    '/room/offline/'
 
 ];
 
@@ -85,11 +85,11 @@ self.addEventListener('fetch', function(event) {
         return;
     }
     
-    if (/\/join\/[0-9a-z]+\/[^\/]+\/$/g.exec(event.request.url)){
+    if (/\/room\/[0-9a-z]+\/[^\/]+\/$/g.exec(event.request.url)){
         // Return room page
         console.log(`[Service Worker] Response room page`);
         event.respondWith(
-            caches.match("/join/offline/offline/")
+            caches.match("/room/offline/")
             .then(function (response) {
                 return response;
             })

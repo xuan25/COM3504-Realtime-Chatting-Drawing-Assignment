@@ -6,18 +6,7 @@ exports.getJoinPage = function (req, res) {
     res.render('join', { title: "Join", imgId: imgId, roomId: roomId });
 }
 
-exports.joinRoom = function (req, res) {
-    imgId = req.params.imgId
-    roomId = req.params.roomId
-    res.render('room', { title: "Room", imgId: imgId, roomId: roomId });
-}
-
 exports.getJoinPageOffline = function (req, res) {
-    res.render('join', { title: "Join" });
+    res.render('join', { title: "Join (Offline)" });
 }
-
-exports.joinRoomOffline = function (req, res) {
-    res.render('room', { title: "Room" });
-}
-
 

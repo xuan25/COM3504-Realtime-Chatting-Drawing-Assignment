@@ -40,7 +40,7 @@ $(document).ready(async () => {
     username = $('#username').val();
 
     await storeUsername(username);
-    window.location.href=`/join/${imgId}/${roomId}/`
+    window.location.href=`/room/${imgId}/${roomId}/`
   });
 
   $('#genRoomIdBtn').click(() => {

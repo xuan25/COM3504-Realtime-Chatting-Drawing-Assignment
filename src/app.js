@@ -10,6 +10,7 @@ var usersRouter = require('./routes/users');
 var uploadRouter = require('./routes/upload');
 var imgRouter = require('./routes/img');
 var joinRouter = require('./routes/join');
+var roomRouter = require('./routes/room');
 
 var app = express();
 
@@ -29,6 +30,7 @@ app.use('/users', usersRouter);
 app.use('/upload', uploadRouter);
 app.use('/img', imgRouter);
 app.use('/join', joinRouter);
+app.use('/room', roomRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
