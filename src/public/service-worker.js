@@ -60,66 +60,76 @@ self.addEventListener('install', function (event) {
 
 // when the worker receives a fetch request
 self.addEventListener('fetch', function(event) {
+
+    if (event.request.url.indexOf('chrome-extension') == 0){
+        // Bypass extention
+        event.respondWith(fetch(event.request));
+        return;
+    }
+    
     if (event.request.url.indexOf('socket.io/?') > -1){
         // Bypass socket io
         event.respondWith(fetch(event.request));
+        return;
     }
-    else if (/\/join\/[0-9a-z]+\/?$/g.exec(event.request.url)){
+    
+    if (/\/join\/[0-9a-z]+\/?$/g.exec(event.request.url)){
         // Return join page
-        console.log(`Response join page`);
-        caches.match("/join/offline/", {ignoreSearch:true, ignoreMethod:true, ignoreVary:true})
-            .then(function (response) {
-                if (response) {
-                    return response;
-                }
-            })
-    }
-    else if (/\/join\/[0-9a-z]+\/[^\/]+\/$/g.exec(event.request.url)){
-        // Return room page
-        console.log(`Response room page`);
-        caches.match("/join/offline/offline/")
-            .then(function (response) {
-                if (response) {
-                    return response;
-                }
-            })
-    }
-    else{
-        console.log('[Service Worker] Fetch', event.request.url);
-        /*
-         * The app is asking for app shell files. In this scenario the app uses the
-         * "Cache, falling back to the network" offline strategy:
-         * https://jakearchibald.com/2014/offline-cookbook/#cache-falling-back-to-network
-         */
+        console.log(`[Service Worker] Response join page`);
         event.respondWith(
-            caches.match(event.request)
-                .then(function (response) {
-                    // Cache hit - return response
-                    if (response) {
-                        return response;
-                    }
-
-                    // Request
-                    return fetch(event.request)
-                        .then(function (response) {
-                            // Check if we received a valid response
-                            if (!response || response.status !== 200) {
-                                console.log(`Response error: [${response.status}]: ${response.statusText}`);
-                                return response
-                            }
-
-                            var responseToCache = response.clone();
-
-                            // cache.add(e.request.url);
-                            caches.open(CACHE_NAME)
-                                .then(function(cache) {
-                                    cache.put(event.request, responseToCache);
-                                });
-                            return response;
-                        });
-                })
+            caches.match("/join/offline/", {ignoreSearch:true, ignoreMethod:true, ignoreVary:true})
+            .then(function (response) {
+                return response;
+            })
         );
+        return;
     }
+    
+    if (/\/join\/[0-9a-z]+\/[^\/]+\/$/g.exec(event.request.url)){
+        // Return room page
+        console.log(`[Service Worker] Response room page`);
+        event.respondWith(
+            caches.match("/join/offline/offline/")
+            .then(function (response) {
+                return response;
+            })
+        );
+        return;
+    }
+
+    console.log('[Service Worker] Fetch', event.request.url);
+    /*
+    * The app is asking for app shell files. In this scenario the app uses the
+    * "Cache, falling back to the network" offline strategy:
+    * https://jakearchibald.com/2014/offline-cookbook/#cache-falling-back-to-network
+    */
+    event.respondWith(
+        caches.match(event.request)
+            .then(function (response) {
+                // Cache hit - return response
+                if (response) {
+                    return response;
+                }
+
+                // Request
+                return fetch(event.request)
+                    .then(function (response) {
+                        // Check if we received a valid response
+                        if (!response || response.status !== 200) {
+                            console.log(`Response error: [${response.status}]: ${response.statusText}`);
+                            return response
+                        }
+
+                        var responseToCache = response.clone();
+
+                        caches.open(CACHE_NAME)
+                            .then(function(cache) {
+                                cache.put(event.request, responseToCache);
+                            });
+                        return response;
+                    });
+            })
+    );
     
 });
 
