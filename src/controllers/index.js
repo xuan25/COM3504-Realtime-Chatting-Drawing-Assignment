@@ -1,6 +1,7 @@
 const Image = require('../models/images');
 const path = require('path');
 
+// home page
 exports.getIndex = function (req, res) {
     try {
         Image.find({},
@@ -28,9 +29,11 @@ exports.getIndex = function (req, res) {
     }
 }
 
+// search ajax api
 exports.searchAuthor = function (req, res) {
     q = req.query.q
     try {
+        // find in mongoDB
         Image.find({ author: q },
             'title author desc',
             function (err, imgs) {
@@ -39,6 +42,7 @@ exports.searchAuthor = function (req, res) {
                     return;
                 }
                 
+                // read results
                 imgList = []
                 for (img of imgs){
                     imgList.push({ 
@@ -49,6 +53,7 @@ exports.searchAuthor = function (req, res) {
                     });
                 }
                 
+                // response
                 res.setHeader('Content-Type', 'application/json');
                 res.send(JSON.stringify({ code: 0, data: { list: imgList } }));
             });
