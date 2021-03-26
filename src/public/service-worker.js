@@ -1,19 +1,33 @@
 var CACHE_NAME = 'com3504_cache';
 var filesToCache = [
-    // add the files you want to cache here 
-    '/',
-    '/javascripts/canvas.js',
+    // common
+    'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
+    'https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css',
+    'https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js',
+    '/javascripts/app.js',
     '/javascripts/database.js',
     '/javascripts/idb.js',
-    '/javascripts/index.js',
-    '/javascripts/join.js',
-    '/javascripts/room.js',
-    '/javascripts/upload.js',
-    '/stylesheets/join.css',
-    '/stylesheets/room.css',
     '/stylesheets/style.css',
+
+    // index
+    '/',
+    '/javascripts/index.js',
+
+    // upload
+    '/upload',
+    '/javascripts/upload.js',
+
+    // join
     '/join/offline/',
-    '/room/offline/'
+    '/javascripts/join.js',
+    '/stylesheets/join.css',
+
+    // room
+    '/room/offline/',
+    '/javascripts/room.js',
+    '/socket.io/socket.io.js',
+    '/javascripts/canvas.js',
+    '/stylesheets/room.css',    
 ];
 
 /**
