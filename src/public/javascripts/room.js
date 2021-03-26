@@ -1,14 +1,22 @@
+// socket.io
 let socket_chat=io.connect('/chat');
 let socket_draw=io.connect('/draw');
 
+// Chatting socket.io status
 let isChatJoined = false
 let isChatOnline = false
-
+// Drawing socket.io status
 let isDrawJoined = false
 let isDrawOnline = false
 
-let img_data_base64;
+// Dictionary of all unsent messages (not been confirmed by the server or not been sent due to connection issue)
+// TODO : Store them into IndexDB (unsent)
+var unsent_msgs = {}
   
+/**
+ * Get the room id
+ * @returns room id
+ */
 function getRoomId() {
     const result = window.location.pathname.split('/')[3]
     if ( result != null ){
@@ -19,6 +27,10 @@ function getRoomId() {
     }
 }
 
+/**
+ * Get the image id
+ * @returns image id
+ */
 function getImgId() {
     const result = window.location.pathname.split('/')[2]
     if ( result != null ){
@@ -30,12 +42,11 @@ function getImgId() {
 }
 
 /**
- * called by <body onload>
- * it initialises the interface and the expected socket messages
- * plus the associated actions
+ * Onload
  */
 $(document).ready(async () => {
 
+    // If it is a template, adjust the content of the template
     if (isTemplate){
         // Parse url
         var imgId = getImgId();
@@ -43,6 +54,7 @@ $(document).ready(async () => {
         $('#image').attr("src", `/img/raw/${imgId}`)
     }
 
+    // share button clicked. copy the link to the clipboard
     $('#share-copy').click(() => {
         var aux = document.createElement("input"); 
         aux.setAttribute("value", window.location.href); 
@@ -54,16 +66,21 @@ $(document).ready(async () => {
         alert("The share link has been copied to your clipboard.");
     });
 
+    
     var username = await getUsername();
     if(username){
+        // UI
         document.getElementById('username').innerHTML = username;
         document.getElementById('roomId').innerHTML = roomId;
     
+        // initailize socket.io
         initChatSocket();
         socket_chat.emit('join', roomId, imgId, username);
     
         initDrawSocket();
         socket_draw.emit('join', roomId, imgId, username);
+
+        // initailize canvas
         initCanvas(onDrawing);
         
         $('#canvas-clear').on('click', function (e) {
@@ -85,15 +102,12 @@ function cls(){
 }
 
 /**
- * Clear local canvas and boardcast a cls event
+ * onDrawing callback
+ * emit paths when drawing
  */
 function onDrawing(data){
     socket_draw.emit('post-path', data);
 }
-
-// All unsent messages
-// TODO : Store them into IndexDB (unsent)
-var unsent_msgs = {}
 
 
 /**
@@ -102,7 +116,7 @@ var unsent_msgs = {}
 function initChatSocket() {
     socket_chat.on('joined', async function () {
         isChatOnline = true
-        // it enters the chat
+        // joined a room
         if (!isChatJoined){
             isChatJoined = true
             
@@ -113,7 +127,7 @@ function initChatSocket() {
             writeInfo('<b>Rejoined the room.</b>');
         }
 
-        // Post all unsent messages
+        // Post all unsent messages if the connection is back
         // If the server is disconnected, wait for all users to reconnect.
         setTimeout(function(){
             for (var msg_id in unsent_msgs) {
@@ -134,49 +148,64 @@ function initChatSocket() {
     });
     socket_chat.on('posted-chat', async function (msg_id) {
         // message post succeed
+
+        // remove from unsent_msgs
         message = unsent_msgs[msg_id]
         delete unsent_msgs[msg_id]
-        
+
+        // display
         let historyEle = document.getElementById(msg_id);
         historyEle.parentNode.removeChild(historyEle);
-
         writeOnChatHistory(msg_id, 'Me', message, true)
 
+
         // TODO : Store them into IndexDB (history)
+
+
     });
     socket_chat.on('recieve-chat', async function (username, msg_id, message) {
         // a message is received
         writeOnChatHistory(msg_id, username, message, false);
 
+
         // TODO : Store them into IndexDB (history)
+
+
     });
     socket_chat.on('connect', function () {
         if(isChatJoined){
+            // Auto rejoin the room if the connection has back
             writeInfo('<b>Reconnected to the server.</b>');
             socket_chat.emit('join', roomId, imgId, username);
         }
     });
     socket_chat.on('disconnect', function () {
         if(isChatJoined){
+            // connection has lost due to some network issue
             isChatOnline = false
             writeInfo('<b>The connection was lost.</b>');
         }
     });
 }
 
-
+/**
+ * Initialises the socket for /draw
+ */
 function initDrawSocket() {
     socket_draw.on('joined', async function () {
         isDrawOnline = true
-        // it enters the chat
+        // joined a room
         if (!isDrawJoined){
             isDrawJoined = true
+
+            // TODO : Retrive history from db
+
         }
         else{
             writeInfo('<b>Rejoined the room. (drawing)</b>');
         }
 
-        // Post all unsent drawings
+        // Post all unsent drawings (reserved)
         // If the server is disconnected, wait for all users to reconnect.
         // setTimeout(function(){
         //     for (var msg_id in unsent_msgs) {
@@ -187,30 +216,28 @@ function initDrawSocket() {
         //     }
         // }, 1000);
     });
+    
     socket_draw.on('recieve-path', function (data, username) {
+        // recieved a path form others
         pushPath(data)
-        // let cvx = document.getElementById('canvas');
-        // let ctx = cvx.getContext('2d');
-        // drawOnCanvas(ctx, data.canvas.width, data.canvas.height, data.paths[0].x1, data.paths[0].y1, data.paths[0].x2, data.paths[0].y2, data.color, data.thickness)
     });
 
     socket_draw.on('connect', function () {
         if(isDrawJoined){
+            // Auto rejoin the room if the connection has back
             writeInfo('<b>Reconnected to the server. (drawing)</b>');
             socket_draw.emit('join', roomId, imgId, username);
         }
     });
-
+    
     socket_draw.on('cls', function () {
-        console.log(isDrawJoined);
-        if(isDrawJoined){
-            
-            clearPaths();
-        }
+        // clear canvas event
+        clearPaths();
     });
 
     socket_draw.on('disconnect', function () {
         if(isDrawJoined){
+            // connection has lost due to some network issue
             isDrawOnline = false
             writeInfo('<b>The connection was lost. (drawing)</b>');
         }
@@ -219,19 +246,23 @@ function initDrawSocket() {
 
 /**
  * called when the Send button is pressed. It gets the text to send from the interface
- * and sends the message via  socket
+ * and sends the message via socket.io
  */
 function sendChatText() {
+    // get message
     let message = document.getElementById('chat-input').value;
     let msg_id = 'msg_' + Math.round(Math.random() * (2 ** 53))
 
+    // Store to unsent_msgs
     unsent_msgs[msg_id] = message
 
+    // emit chat message if the connection is on
     if(isChatOnline){
         socket_chat.emit('post-chat', msg_id, message);
     }
     
-    clearInputBox();
+    // Clear input and show an unsent message
+    document.getElementById('chat-input').value = '';
     writeOnChatHistory(msg_id, 'Me', message + " <b>(unsent)</b>", true);
 
     return false
@@ -239,9 +270,11 @@ function sendChatText() {
 
 
 /**
- * it appends the given html text to the history div
- * this is to be called when the socket receives the chat message (socket.on ('message'...)
- * @param text: the text to append
+ * Show a message
+ * @param msgId: message id
+ * @param username: username
+ * @param message: message
+ * @param isMe: my message or from others
  */
 function writeOnChatHistory(msgId, username, message, isMe) {
     if (isMe){
@@ -285,7 +318,10 @@ function writeOnChatHistory(msgId, username, message, isMe) {
     let history = document.getElementById('history');
     history.scrollTop = history.scrollHeight;
 }
-
+/**
+ * Show a infomation/notice
+ * @param message notice message
+ */
 function writeInfo(message){
     $('#history').append(
         $(`
@@ -300,11 +336,4 @@ function writeInfo(message){
     // scroll to the last element
     let history = document.getElementById('history');
     history.scrollTop = history.scrollHeight;
-}
-
-/**
- * clearInputBox
- */
-function clearInputBox() {
-    document.getElementById('chat-input').value = '';
 }

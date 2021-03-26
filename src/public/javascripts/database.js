@@ -15,7 +15,7 @@ async function initDatabase() {
           let store = upgradeDb.createObjectStore(JOIN_STORE_NAME);
         }
         
-        //chat
+        // chat
         if (!upgradeDb.objectStoreNames.contains(CHAT_HISTORY_STORE_NAME)) {
           let chatHistoryDB = upgradeDb.createObjectStore(
             CHAT_HISTORY_STORE_NAME,

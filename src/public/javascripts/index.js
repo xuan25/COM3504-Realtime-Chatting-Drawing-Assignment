@@ -1,15 +1,21 @@
+/**
+ * Onload
+ */
 $(document).ready(() => {
+  // search button clicked
   $('#searchBtn').click(() => {
     searchText = $('#searchBox').val();
     url = null
 
+    // search or not
     if(searchText === ''){
       url = '/img/meta'
     }
     else{
       url = `/search?q=${searchText}`
     }
-
+    
+    // ajax request
     $.ajax({
       url: url,
       type: "GET",

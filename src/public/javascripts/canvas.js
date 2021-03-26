@@ -1,12 +1,17 @@
 /**
  * this file contains the functions to control the drawing on the canvas
  */
-let room;
-let userId;
+
+// ink params
 let color = 'red', thickness = 4;
 
+// store all paths on the canvas
 let pathBuffer = []
 
+/**
+ * Push a path to the buffer and draw it on the canvas
+ * @param data path data object
+ */
 function pushPath(data){
     pathBuffer.push(data)
 
@@ -16,6 +21,9 @@ function pushPath(data){
     drawOnCanvas(ctx, data.canvas.width, data.canvas.height, data.paths[0].x1, data.paths[0].y1, data.paths[0].x2, data.paths[0].y2, data.color, data.thickness)
 }
 
+/**
+ * Redraw all the paths in the buffer
+ */
 function redrawPaths(){
     let cvx = document.getElementById('canvas');
     let ctx = cvx.getContext('2d');
@@ -25,6 +33,9 @@ function redrawPaths(){
     });
 }
 
+/**
+ * Clear canvas
+ */
 function clearPaths(){
     pathBuffer = []
 
@@ -40,7 +51,7 @@ function clearPaths(){
 
 /**
  * it inits the image canvas to draw on. It sets up the events to respond to (click, mouse on, etc.)
- * @param onDrawingCallback Callback function when user is drawing.
+ * @param onDrawingCallback Callback function when user is drawing. (for socket.io)
  */
 function initCanvas(onDrawingCallback) {
     let flag = false,
@@ -71,8 +82,7 @@ function initCanvas(onDrawingCallback) {
         }
     });
 
-    // this is called when the src of the image is loaded
-    // this is an async operation as it may take time
+    // Loaded & resize event
     imgEle.addEventListener('load', () => {
         repositionCanvas();
     });
@@ -87,6 +97,10 @@ function initCanvas(onDrawingCallback) {
     }
 }
 
+/**
+ * Re-position the canvas (size & position)
+ * then restore all the paths
+ */
 function repositionCanvas(){
     let canvas = document.getElementById('canvas');
     let img = document.getElementById('image');

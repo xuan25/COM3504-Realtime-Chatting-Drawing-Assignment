@@ -1,15 +1,26 @@
+
+// incomming data stream form camera
 var localMediaStream = null;
+// check the status of the media straem
 var videoStreamInited = false;
 
+// store the image data
 let img_data_local_base64 = null;
 let img_data_camera_base64 = null;
 
+
+/**
+ * Onload
+ */
 $(document).ready(function() {
 	initPanel();
   initFileLoader();
   initSnapshot();
 });
 
+/**
+ * Initialize the image upload panel
+ */
 function initPanel(){
   $("#urlPanel").show();
   $("#filePanel").hide();
@@ -18,18 +29,21 @@ function initPanel(){
   $('#selectBox').change(function() {
     sel = $('#selectBox').val()
     if (sel === "1") {
+      // from internet url 
       $("#urlPanel").show();
       $("#filePanel").hide();
       $("#cameraPanel").hide();
       deinitVideoStream();
     }
     else if (sel === "2") {
+      // from file
       $("#urlPanel").hide();
       $("#filePanel").show();
       $("#cameraPanel").hide();
       deinitVideoStream();
     }
     else {
+      // from camera
       $("#urlPanel").hide();
       $("#filePanel").hide();
       $("#cameraPanel").show();
@@ -38,6 +52,10 @@ function initPanel(){
   });
 }
 
+/**
+ * Close the media stream
+ * @returns 
+ */
 function deinitVideoStream(){
   if(!videoStreamInited){
     return;
@@ -47,6 +65,10 @@ function deinitVideoStream(){
   localMediaStream = null;
 }
 
+/**
+ * Initialize the media stream 
+ * @returns 
+ */
 function initVideoStream(){
   if(videoStreamInited){
     return;
@@ -61,6 +83,7 @@ function initVideoStream(){
     localMediaStream = stream;
     
     setTimeout(() => {
+      // resize snapshot canvas
       var video = document.getElementById('previewVideo');
       var canvas = document.getElementById('shotCanvas');
       canvas.width = video.videoWidth;
@@ -73,8 +96,12 @@ function initVideoStream(){
   });
 }
 
+/**
+ * Initialize snapshot event
+ */
 function initSnapshot(){
   $("#shotBtn").click(function(){
+    // draw a snapshot to the canvas
     if (localMediaStream) {
       var video = document.getElementById('previewVideo');
       var canvas = document.getElementById('shotCanvas');
@@ -90,6 +117,9 @@ function initSnapshot(){
   });
 }
 
+/**
+ * Get the local image
+ */
 function initFileLoader() {
   let fileInput = document.getElementById('fromFile');
   fileInput.addEventListener('change', function () {
@@ -114,33 +144,60 @@ function initFileLoader() {
   });
 }
 
+/**
+ * get the image data and upload
+ */
 function upload() {
   title = $("#title").val();
   author = $("#author").val();
   description = $("#description").val();
 
   sel = $('#selectBox').val()
-  if (sel === "1") { //url
+  if (sel === "1") {
+    // from url
     imgUrl = $("#fromUrl").val()
     uploadByUrl(imgUrl, title, author, description);
   }
-  else if (sel === "2") { //local file
+  else if (sel === "2") {
+    // from local file
     uploadByData(img_data_local_base64, title, author, description)
   }
-  else { //camera
+  else {
+    // from camera
     uploadByData(img_data_camera_base64, title, author, description)
   }
 }
 
-
+/**
+ * upload the image by the internet link
+ * @param imgUrl  image url
+ * @param title title
+ * @param author author
+ * @param description description
+ */
 function uploadByUrl(imgUrl, title, author, description){
   doUpload(title, author, description, "http", imgUrl)
 }
-
+/**
+ * upload the image by data Url
+ * @param  data image data
+ * @param  title title
+ * @param  author author
+ * @param  description description
+ */
 function uploadByData(data, title, author, description){
   doUpload(title, author, description, "data", data)
 }
 
+/**
+ * 
+ * Get all the information required for submission and submit
+ * @param  title title
+ * @param  author author
+ * @param  description description
+ * @param  imgType image type
+ * @param  img image
+ */
 function doUpload(title, author, description, imgType, img){
   $("#submitBtn").prop("disabled", true);
   data = { title: title, author: author, desc: description, imgType: imgType, img: img }
