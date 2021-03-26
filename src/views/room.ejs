@@ -27,6 +27,7 @@
 </head>
 <body>
 <div>
+    <!-- Info Header -->
     <div class="d-flex flex-row align-items-center" style="height: 5vh">
         <div class="ms-2">
             Hi,
@@ -37,13 +38,19 @@
         <button id="share-copy" type="button" class="btn btn-success btn-sm ms-2">Copy share link</button>
         <button id="canvas-clear" type="button" class="btn btn-danger btn-sm ms-2">Clear canvas</button>
     </div>
+
+    <!-- Image/Drawing area -->
     <div class="p-2 d-flex justify-content-center align-items-center" style="height: 50vh">
         <img id="image" class="drawing-img" <%- isTemplate? '' : `src=\"/img/raw/${imgId}\"`%>>
         <canvas id="canvas" class="drawing-canvas"></canvas>
     </div>
+
+    <!-- Chat area -->
     <div id="history" style="height: 35vh;" class="w-100 p-3 overflow-auto d-flex flex-column chat-bg">
     
     </div>
+
+    <!-- Input area -->
     <div id="input" style="height: 5vh" class="w-100 p-3">
         <form class="d-flex justify-content-center align-items-center" onsubmit="sendChatText(); return false;">
             <div class="input-group mb-3">

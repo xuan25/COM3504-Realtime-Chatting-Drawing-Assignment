@@ -16,7 +16,7 @@
 
     <div class="container-fluid w-75 my-5">
         <form class="row g-3" onsubmit="return false">
-
+            <!-- Basic Info -->
             <div class="col-md-4">
               <label class="form-label">Title</label>
               <input type="text" class="form-control" id="title" value="">
@@ -39,22 +39,26 @@
               </select>
             </div>
 
+            <!-- URL upload panel -->
             <div id="urlPanel" class="mb-3">
               <label class="form-label" >URL</label>
               <input type="text" class="form-control" id="fromUrl" placeholder="Put the link here">
             </div>
 
+            <!-- File upload panel -->
             <div id="filePanel" class="mb-3">
                 <label for="formFile" class="form-label">Choose a file</label>
                 <input class="form-control" type="file" id="fromFile">
             </div>
 
+            <!-- Camera upload panel -->
             <div id="cameraPanel" class="mb-3">
               <video id="previewVideo" class="m-2 w-100" autoplay></video>
               <button id="shotBtn" class="btn btn-primary m-2">Shoot an image</button>
               <canvas id="shotCanvas" class="m-2 w-100 bg-light bg-gradient"></canvas>
             </div>
 
+            <!-- Submit -->
             <div class="">
               <button id="submitBtn" class="btn btn-primary" type="submit" onclick="upload()">Submit image</button>
             </div>

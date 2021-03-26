@@ -17,6 +17,7 @@
 <body>
     <% include ./header %>
 
+    <!-- Search -->
     <div class="w-75 mt-3 container-fluid">
         <form class="d-flex" onsubmit="return false">
             <input id="searchBox" class="form-control me-2" type="search" placeholder="Search Author" aria-label="Search">
@@ -24,6 +25,7 @@
         </form>
     </div>
 		
+    <!-- Image List -->
 		<div id="roomsContainer" class="container-fluid w-75 mt-3 d-flex align-items-center justify-content-center flex-wrap masonry">
 			<% for(img of imgList) { %>
 				<div class="card m-3 item" style="width: 18rem;">
