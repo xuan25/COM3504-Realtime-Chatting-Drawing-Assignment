@@ -8,13 +8,52 @@ let isDrawJoined = false
 let isDrawOnline = false
 
 let img_data_base64;
+  
+function getRoomId() {
+    const result = window.location.pathname.split('/')[3]
+    if ( result != null ){
+        return decodeURI(result);
+    }
+    else{
+        return null;
+    }
+}
+
+function getImgId() {
+    const result = window.location.pathname.split('/')[2]
+    if ( result != null ){
+        return decodeURI(result);
+    }
+    else{
+        return null;
+    }
+}
 
 /**
  * called by <body onload>
  * it initialises the interface and the expected socket messages
  * plus the associated actions
  */
- $(document).ready(async () => {
+$(document).ready(async () => {
+
+    if (isTemplate){
+        // Parse url
+        var imgId = getImgId();
+        var roomId = getRoomId();
+        $('#image').attr("src", `/img/raw/${imgId}`)
+    }
+
+    $('#share-copy').click(() => {
+        var aux = document.createElement("input"); 
+        aux.setAttribute("value", window.location.href); 
+        document.body.appendChild(aux); 
+        aux.select();
+        document.execCommand("copy"); 
+        document.body.removeChild(aux);
+
+        alert("The share link has been copied to your clipboard.");
+    });
+
     var username = await getUsername();
     if(username){
         document.getElementById('username').innerHTML = username;
@@ -41,7 +80,7 @@ let img_data_base64;
  * Clear local canvas and boardcast a cls event
  */
 function cls(){
-    clearCanvas();
+    clearPaths();
     socket_draw.emit('cls');
 }
 
@@ -149,9 +188,10 @@ function initDrawSocket() {
         // }, 1000);
     });
     socket_draw.on('recieve-path', function (data, username) {
-        let cvx = document.getElementById('canvas');
-        let ctx = cvx.getContext('2d');
-        drawOnCanvas(ctx, data.canvas.width, data.canvas.height, data.paths[0].x1, data.paths[0].y1, data.paths[0].x2, data.paths[0].y2, data.color, data.thickness)
+        pushPath(data)
+        // let cvx = document.getElementById('canvas');
+        // let ctx = cvx.getContext('2d');
+        // drawOnCanvas(ctx, data.canvas.width, data.canvas.height, data.paths[0].x1, data.paths[0].y1, data.paths[0].x2, data.paths[0].y2, data.color, data.thickness)
     });
 
     socket_draw.on('connect', function () {
@@ -165,7 +205,7 @@ function initDrawSocket() {
         console.log(isDrawJoined);
         if(isDrawJoined){
             
-            clearCanvas();
+            clearPaths();
         }
     });
 
@@ -193,6 +233,8 @@ function sendChatText() {
     
     clearInputBox();
     writeOnChatHistory(msg_id, 'Me', message + " <b>(unsent)</b>", true);
+
+    return false
 }
 
 

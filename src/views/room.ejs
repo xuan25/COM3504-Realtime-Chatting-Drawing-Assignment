@@ -16,9 +16,14 @@
     <link rel='stylesheet' href='/stylesheets/room.css'/>
 
     <script>
-        var imgId = '<%= imgId %>';
-        var roomId = '<%= roomId %>';
+        var isTemplate = <%- isTemplate %>;
     </script>
+    <% if (!isTemplate) { %>
+        <%- "<script>" %>
+            <%- `var imgId = \'${imgId}\';` %>
+            <%- `var roomId = \'${roomId}\';` %>
+        <%- "</script>" %>
+    <% } %>
 </head>
 <body>
 <div>
@@ -32,11 +37,9 @@
         <button id="share-copy" type="button" class="btn btn-success btn-sm ms-2">Copy share link</button>
         <button id="canvas-clear" type="button" class="btn btn-danger btn-sm ms-2">Clear canvas</button>
     </div>
-    <div class="p-2 d-flex justify-content-center" style="height: 50vh">
-        <div>
-            <img id="image" height="100%" src="/img/raw/<%= imgId %>">
-            <canvas id="canvas"></canvas>
-        </div> 
+    <div class="p-2 d-flex justify-content-center align-items-center" style="height: 50vh">
+        <img id="image" class="drawing-img" <%- isTemplate? '' : `src=\"/img/raw/${imgId}\"`%>>
+        <canvas id="canvas" class="drawing-canvas"></canvas>
     </div>
     <div id="history" style="height: 35vh;" class="w-100 p-3 overflow-auto d-flex flex-column chat-bg">
     
