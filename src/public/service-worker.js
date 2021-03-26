@@ -68,6 +68,11 @@ self.addEventListener('fetch', function(event) {
             try {
                 response = await fetch(event.request);
                 console.log(`[Service Worker] Response img metadata from server`);
+                
+                var responseToCache = response.clone();
+                cache = await caches.open(CACHE_NAME)
+                cache.put(event.request, responseToCache);
+
                 return response;
             } catch (error) {
                 console.log(`[Service Worker] Response img metadata from cache`);
