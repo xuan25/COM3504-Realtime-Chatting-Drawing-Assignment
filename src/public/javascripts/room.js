@@ -8,13 +8,38 @@ let isDrawJoined = false
 let isDrawOnline = false
 
 let img_data_base64;
+  
+function getRoomId() {
+    const result = window.location.pathname.split('/')[3]
+    if ( result != null ){
+        return decodeURI(result);
+    }
+    else{
+        return null;
+    }
+}
+
+function getImgId() {
+    const result = window.location.pathname.split('/')[2]
+    if ( result != null ){
+        return decodeURI(result);
+    }
+    else{
+        return null;
+    }
+}
 
 /**
  * called by <body onload>
  * it initialises the interface and the expected socket messages
  * plus the associated actions
  */
- $(document).ready(async () => {
+$(document).ready(async () => {
+
+    // Parse url
+    var imgId = getImgId();
+    var roomId = getRoomId();
+    $('#image').attr("src", `/img/raw/${imgId}`)
 
     $('#share-copy').click(() => {
         var aux = document.createElement("input"); 
