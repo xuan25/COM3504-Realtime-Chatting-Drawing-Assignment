@@ -18,7 +18,7 @@
 
 </head>
 <body>
-    <div class="backgroundImage" style="background-image: url(/img/raw/<%= imgId %>);"></div>
+    <div id="backgroundImage" class="backgroundImage"></div>
     <div class="bingImageOverlay"></div>
 
     <div class="position-absolute top-50 start-50 translate-middle w-50">
@@ -34,10 +34,10 @@
             </div>
             <div class="input-group mb-3">
                 <span class="input-group-text">Room ID</span>
-                <input id="roomId" type="text" class="form-control" aria-label="roomId" aria-describedby="roomId" placeholder="Please input a room ID" value="<%= roomId %>">
+                <input id="roomId" type="text" class="form-control" aria-label="roomId" aria-describedby="roomId" placeholder="Please input a room ID">
                 <button id="genRoomIdBtn" type="button" class="btn btn-secondary">Generate</button>
             </div>
-            <input id="imgId" type="text" class="form-control" aria-label="imgId" aria-describedby="imgId" hidden value="<%= imgId %>">
+            <input id="imgId" type="text" class="form-control" aria-label="imgId" aria-describedby="imgId" hidden>
         </div>
         
         <div class="d-flex flex-row justify-content-center my-5">
