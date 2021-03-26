@@ -12,6 +12,9 @@ let isDrawOnline = false
 // Dictionary of all unsent messages (not been confirmed by the server or not been sent due to connection issue)
 // TODO : Store them into IndexDB (unsent)
 var unsent_msgs = {}
+
+var imgId;
+var roomId;
   
 /**
  * Get the room id
@@ -49,8 +52,8 @@ $(document).ready(async () => {
     // If it is a template, adjust the content of the template
     if (isTemplate){
         // Parse url
-        var imgId = getImgId();
-        var roomId = getRoomId();
+        imgId = getImgId();
+        roomId = getRoomId();
         $('#image').attr("src", `/img/raw/${imgId}`)
     }
 
@@ -251,6 +254,11 @@ function initDrawSocket() {
 function sendChatText() {
     // get message
     let message = document.getElementById('chat-input').value;
+
+    if (message === ""){
+        return;
+    }
+
     let msg_id = 'msg_' + Math.round(Math.random() * (2 ** 53))
 
     // Store to unsent_msgs
