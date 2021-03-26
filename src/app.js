@@ -4,8 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+// routes
 var indexRouter = require('./routes/index');
-var deprecatedRouter = require('./routes/deprecated');
 var usersRouter = require('./routes/users');
 var uploadRouter = require('./routes/upload');
 var imgRouter = require('./routes/img');
@@ -27,7 +27,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/deprecated', deprecatedRouter);
 app.use('/users', usersRouter);
 app.use('/upload', uploadRouter);
 app.use('/img', imgRouter);

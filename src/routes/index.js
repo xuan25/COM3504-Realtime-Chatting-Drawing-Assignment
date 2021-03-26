@@ -3,8 +3,10 @@ var router = express.Router();
 
 const indexCon = require('../controllers/index');
 
-/* GET home page. */
+// home page
 router.get('/', indexCon.getIndex);
+
+// search ajax api
 router.get('/search', indexCon.searchAuthor);
 
 module.exports = router;
