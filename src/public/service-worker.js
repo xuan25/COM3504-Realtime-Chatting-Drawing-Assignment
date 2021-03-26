@@ -14,7 +14,6 @@ var filesToCache = [
     '/stylesheets/style.css',
     '/join/offline/',
     '/room/offline/'
-
 ];
 
 /**
@@ -22,41 +21,15 @@ var filesToCache = [
  */
 self.addEventListener('install', function (event) {
     console.log('[ServiceWorker] Install');
-    event.waitUntil(
-        caches.open(CACHE_NAME).then(function (cache) {
-            console.log('[ServiceWorker] Caching app shell');
-            return cache.addAll(filesToCache);
-        })
-    );
-});
+    event.waitUntil(async function(){
+        console.log('[ServiceWorker] Removing old cache');
+        caches.delete(CACHE_NAME);
 
-/**
- * activation of service worker: it removes all cashed files if necessary
- */
-//  self.addEventListener('activate', function (e) {
-//     console.log('[ServiceWorker] Activate');
-//     e.waitUntil(
-//         caches.keys().then(function (keyList) {
-//             return Promise.all(keyList.map(function (key) {
-//                 if (key !== cacheName && key !== dataCacheName) {
-//                     console.log('[ServiceWorker] Removing old cache', key);
-//                     return caches.delete(key);
-//                 }
-//             }));
-//         })
-//     );
-//     /*
-//      * Fixes a corner case in which the app wasn't returning the latest data.
-//      * You can reproduce the corner case by commenting out the line below and
-//      * then doing the following steps: 1) load app for first time so that the
-//      * initial New York City data is shown 2) press the refresh button on the
-//      * app 3) go offline 4) reload the app. You expect to see the newer NYC
-//      * data, but you actually see the initial data. This happens because the
-//      * service worker is not yet activated. The code below essentially lets
-//      * you activate the service worker faster.
-//      */
-//     return self.clients.claim();
-// });
+        console.log('[ServiceWorker] Caching app shell');
+        cache = await caches.open(CACHE_NAME);
+        return cache.addAll(filesToCache);
+    }());
+});
 
 // when the worker receives a fetch request
 self.addEventListener('fetch', function(event) {
@@ -75,25 +48,35 @@ self.addEventListener('fetch', function(event) {
     
     if (/\/join\/[0-9a-z]+\/?$/g.exec(event.request.url)){
         // Return join page
-        console.log(`[Service Worker] Response join page`);
-        event.respondWith(
-            caches.match("/join/offline/", {ignoreSearch:true, ignoreMethod:true, ignoreVary:true})
-            .then(function (response) {
+        console.log(`[Service Worker] Request join page`);
+        event.respondWith(async function() {
+            try {
+                response = await fetch(event.request);
+                console.log(`[Service Worker] Response online join page`);
                 return response;
-            })
-        );
+            } catch (error) {
+                console.log(`[Service Worker] Response offline join page`);
+                offlinePage = await caches.match("/join/offline/")
+                return offlinePage;
+            }
+        }());
         return;
     }
     
     if (/\/room\/[0-9a-z]+\/[^\/]+\/$/g.exec(event.request.url)){
         // Return room page
-        console.log(`[Service Worker] Response room page`);
-        event.respondWith(
-            caches.match("/room/offline/")
-            .then(function (response) {
+        console.log(`[Service Worker] Request room page`);
+        event.respondWith(async function() {
+            try {
+                response = await fetch(event.request);
+                console.log(`[Service Worker] Response online room page`);
                 return response;
-            })
-        );
+            } catch (error) {
+                console.log(`[Service Worker] Response offline room page`);
+                offlinePage = await caches.match("/room/offline/")
+                return offlinePage;
+            }
+        }());
         return;
     }
 
@@ -103,33 +86,29 @@ self.addEventListener('fetch', function(event) {
     * "Cache, falling back to the network" offline strategy:
     * https://jakearchibald.com/2014/offline-cookbook/#cache-falling-back-to-network
     */
-    event.respondWith(
-        caches.match(event.request)
-            .then(function (response) {
-                // Cache hit - return response
-                if (response) {
-                    return response;
-                }
+    event.respondWith(async function () {
+        response = await caches.match(event.request);
 
-                // Request
-                return fetch(event.request)
-                    .then(function (response) {
-                        // Check if we received a valid response
-                        if (!response || response.status !== 200) {
-                            console.log(`Response error: [${response.status}]: ${response.statusText}`);
-                            return response
-                        }
+        // Cache hit - return response
+        if (response) {
+            return response;
+        }
 
-                        var responseToCache = response.clone();
+        response = await fetch(event.request);
 
-                        caches.open(CACHE_NAME)
-                            .then(function(cache) {
-                                cache.put(event.request, responseToCache);
-                            });
-                        return response;
-                    });
-            })
-    );
+        // Response validation
+        if (!response || response.status !== 200) {
+            console.log(`Response error: [${response.status}]: ${response.statusText}`);
+            return response
+        }
+
+        // Store to the cache
+        var responseToCache = response.clone();
+        cache = await caches.open(CACHE_NAME)
+        cache.put(event.request, responseToCache);
+
+        return response;
+    }());
     
 });
 
