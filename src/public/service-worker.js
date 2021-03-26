@@ -11,7 +11,10 @@ var filesToCache = [
     '/javascripts/upload.js',
     '/stylesheets/join.css',
     '/stylesheets/room.css',
-    '/stylesheets/style.css'
+    '/stylesheets/style.css',
+    '/join/offline/',
+    '/join/offline/offline/'
+
 ];
 
 /**
@@ -60,6 +63,26 @@ self.addEventListener('fetch', function(event) {
     if (event.request.url.indexOf('socket.io/?') > -1){
         // Bypass socket io
         event.respondWith(fetch(event.request));
+    }
+    else if (/\/join\/[0-9a-z]+\/?$/g.exec(event.request.url)){
+        // Return join page
+        console.log(`Response join page`);
+        caches.match("/join/offline/", {ignoreSearch:true, ignoreMethod:true, ignoreVary:true})
+            .then(function (response) {
+                if (response) {
+                    return response;
+                }
+            })
+    }
+    else if (/\/join\/[0-9a-z]+\/[^\/]+\/$/g.exec(event.request.url)){
+        // Return room page
+        console.log(`Response room page`);
+        caches.match("/join/offline/offline/")
+            .then(function (response) {
+                if (response) {
+                    return response;
+                }
+            })
     }
     else{
         console.log('[Service Worker] Fetch', event.request.url);
