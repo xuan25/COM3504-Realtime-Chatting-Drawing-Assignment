@@ -36,10 +36,12 @@ function getImgId() {
  */
 $(document).ready(async () => {
 
-    // Parse url
-    var imgId = getImgId();
-    var roomId = getRoomId();
-    $('#image').attr("src", `/img/raw/${imgId}`)
+    if (isTemplate){
+        // Parse url
+        var imgId = getImgId();
+        var roomId = getRoomId();
+        $('#image').attr("src", `/img/raw/${imgId}`)
+    }
 
     $('#share-copy').click(() => {
         var aux = document.createElement("input"); 

@@ -14,10 +14,12 @@
     
     <script src="/javascripts/idb.js"></script>
     <script src="/javascripts/database.js"></script>
-
+    <script>
+        var isTemplate = <%- isTemplate %>;
+    </script>
 </head>
 <body>
-    <div id="backgroundImage" class="backgroundImage"></div>
+    <div id="backgroundImage" class="backgroundImage" <%- isTemplate? '' : `style=\"background-image: url(/img/raw/${imgId});\"`%>></div>
     <div class="bingImageOverlay"></div>
 
     <div class="position-absolute top-50 start-50 translate-middle w-50">
@@ -33,10 +35,10 @@
             </div>
             <div class="input-group mb-3">
                 <span class="input-group-text">Room ID</span>
-                <input id="roomId" type="text" class="form-control" aria-label="roomId" aria-describedby="roomId" placeholder="Please input a room ID">
+                <input id="roomId" type="text" class="form-control" aria-label="roomId" aria-describedby="roomId" placeholder="Please input a room ID" <%- (isTemplate || !roomId)? '' : `value=\"${roomId}\"`%>>
                 <button id="genRoomIdBtn" type="button" class="btn btn-secondary">Generate</button>
             </div>
-            <input id="imgId" type="text" class="form-control" aria-label="imgId" aria-describedby="imgId" hidden>
+            <input id="imgId" type="text" class="form-control" aria-label="imgId" aria-describedby="imgId" hidden <%- isTemplate? '' : `value=\"${imgId}\"`%>>
         </div>
         
         <div class="d-flex flex-row justify-content-center my-5">

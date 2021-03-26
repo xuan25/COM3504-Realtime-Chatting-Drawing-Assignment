@@ -26,13 +26,15 @@ function getImgId() {
 
 $(document).ready(async () => {
 
-  // Parse url
-  var imgId = getImgId();
-  var roomId = getRoomId();
-  $('#imgId').val(imgId)
-  $('#roomId').val(roomId)
-  $('#backgroundImage').css("background-image", `url(/img/raw/${imgId})`)
-
+  
+  if (isTemplate){
+    // Parse url
+    var imgId = getImgId();
+    var roomId = getRoomId();
+    $('#imgId').val(imgId)
+    $('#roomId').val(roomId)
+    $('#backgroundImage').css("background-image", `url(/img/raw/${imgId})`)
+  }
 
   $('#joinBtn').click(async () => {
     imgId = $('#imgId').val();
