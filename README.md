@@ -34,7 +34,7 @@
  - [x] Users can start an annotation session by selecting an image and choose a room number
  - [x] Users can chat within a room
  - [x] Users can draw on the image within a room
+ - [x] Offline experience with Service Worker
  - [ ] Chatting history can be stored in IndexedDB
  - [ ] Drawing history can be stored in IndexedDB
- - [ ] Offline experience with Service Worker
  - [ ] View room history
