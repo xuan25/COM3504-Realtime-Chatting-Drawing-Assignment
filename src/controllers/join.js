@@ -12,3 +12,12 @@ exports.joinRoom = function (req, res) {
     res.render('room', { title: "Room", imgId: imgId, roomId: roomId });
 }
 
+exports.getJoinPageOffline = function (req, res) {
+    res.render('join', { title: "Join" });
+}
+
+exports.joinRoomOffline = function (req, res) {
+    res.render('room', { title: "Room" });
+}
+
+
