@@ -27,17 +27,7 @@
 		
     <!-- Image List -->
 		<div id="roomsContainer" class="container-fluid w-75 mt-3 d-flex align-items-center justify-content-center flex-wrap masonry">
-			<% for(img of imgList) { %>
-				<div class="card m-3 item" style="width: 18rem;">
-					<img src="/img/raw/<%= img.id %>" class="card-img-top" alt="...">
-					<div class="card-body">
-						<h5 class="card-title"><%= img.title %></h5>
-						<p class="card-title">Created by <%= img.author %></p>
-						<p class="card-text">Description: <%= img.desc %></p>
-            <a href="/join/<%= img.id %>" class="btn btn-outline-primary w-100">Join</a>
-					</div>
-				</div>
-			 <% } %>
+			
 		</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>

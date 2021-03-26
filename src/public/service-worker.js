@@ -48,6 +48,8 @@ self.addEventListener('install', function (event) {
 // when the worker receives a fetch request
 self.addEventListener('fetch', function(event) {
 
+    console.log('[Service Worker] Fetch', event.request.url);
+
     if (event.request.url.indexOf('chrome-extension') == 0){
         // Bypass extention
         event.respondWith(fetch(event.request));
@@ -57,6 +59,22 @@ self.addEventListener('fetch', function(event) {
     if (event.request.url.indexOf('socket.io/?') > -1){
         // Bypass socket io
         event.respondWith(fetch(event.request));
+        return;
+    }
+
+    if (event.request.url.indexOf('/img/meta') > -1 || event.request.url.indexOf('/img/search') > -1){
+        // Return join page
+        event.respondWith(async function() {
+            try {
+                response = await fetch(event.request);
+                console.log(`[Service Worker] Response img metadata from server`);
+                return response;
+            } catch (error) {
+                console.log(`[Service Worker] Response img metadata from cache`);
+                cachedResponse = await caches.match(event.request)
+                return cachedResponse;
+            }
+        }());
         return;
     }
     
@@ -94,7 +112,6 @@ self.addEventListener('fetch', function(event) {
         return;
     }
 
-    console.log('[Service Worker] Fetch', event.request.url);
     /*
     * The app is asking for app shell files. In this scenario the app uses the
     * "Cache, falling back to the network" offline strategy:
