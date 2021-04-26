@@ -11,6 +11,7 @@ let isDrawOnline = false
 
 // Dictionary of all unsent messages (not been confirmed by the server or not been sent due to connection issue)
 // TODO : Store them into IndexDB (unsent)
+
 var unsent_msgs = {}
 
 var imgId;
@@ -20,7 +21,7 @@ var roomId;
  * Get the room id
  * @returns room id
  */
-function getRoomId() {
+ function getRoomId() {
     const result = window.location.pathname.split('/')[3]
     if ( result != null ){
         return decodeURI(result);
@@ -124,7 +125,8 @@ function initChatSocket() {
             isChatJoined = true
             
             // TODO : Retrive history from db
-
+            // get his
+            // for h in his
         }
         else{
             writeInfo('<b>Rejoined the room.</b>');
@@ -159,20 +161,20 @@ function initChatSocket() {
         // display
         let historyEle = document.getElementById(msg_id);
         historyEle.parentNode.removeChild(historyEle);
-        writeOnChatHistory(msg_id, 'Me', message, true)
+        writeOnChatHistory(msg_id, 'Me', message, true);
 
 
         // TODO : Store them into IndexDB (history)
-
+        // storeChatHistory(roomId, username, msgId, message)
+        await storeChatHistory(roomId, 'Me', msg_id, message,true)
 
     });
     socket_chat.on('recieve-chat', async function (username, msg_id, message) {
+      
+        // TODO : Store them into IndexDB (history)
         // a message is received
         writeOnChatHistory(msg_id, username, message, false);
-
-
-        // TODO : Store them into IndexDB (history)
-
+        await storeChatHistory(roomId, username, msg_id, message,false)
 
     });
     socket_chat.on('connect', function () {
@@ -284,7 +286,7 @@ function sendChatText() {
  * @param message: message
  * @param isMe: my message or from others
  */
-function writeOnChatHistory(msgId, username, message, isMe) {
+ function writeOnChatHistory(msgId, username, message, isMe) {
     if (isMe){
         $('#history').append(
             $(`
