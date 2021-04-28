@@ -11,7 +11,7 @@ let isDrawOnline = false
 
 // Dictionary of all unsent messages (not been confirmed by the server or not been sent due to connection issue)
 // TODO : Store them into IndexDB (unsent)
-
+await storeChatHistory(roomId, 'Me', msg_id, message,true,false);
 
 var unsent_msgs = {}
 
@@ -45,6 +45,16 @@ function getImgId() {
         return null;
     }
 }
+async function ShowChatHistory(roomId) {
+    let chat = await getChatHistories(roomId);
+    if (chat == null && chat === undefined)
+        return "unavailable";
+    else
+        for (let i = 0; i < chat.length; ++i){
+            let msg = '<b>' + chat[i]["user"] + ':</b> '+chat[i]["msg"]
+            writeOnChatHistory(msg);
+        }
+  }
 
 /**
  * Onload
@@ -126,8 +136,7 @@ function initChatSocket() {
             isChatJoined = true
             
             // TODO : Retrive history from db
-            // get his
-            // for h in his
+            //ShowChatHistory()
         }
         else{
             writeInfo('<b>Rejoined the room.</b>');
@@ -166,7 +175,7 @@ function initChatSocket() {
 
 
         // TODO : Store them into IndexDB (history)
-        // storeChatHistory(roomId, username, msgId, message)
+     
         await storeChatHistory(roomId, 'Me', msg_id, message,true,true);
 
     });
@@ -205,6 +214,7 @@ function initDrawSocket() {
             isDrawJoined = true
 
             // TODO : Retrive history from db
+
 
         }
         else{
@@ -348,3 +358,4 @@ function writeInfo(message){
     let history = document.getElementById('history');
     history.scrollTop = history.scrollHeight;
 }
+ 
