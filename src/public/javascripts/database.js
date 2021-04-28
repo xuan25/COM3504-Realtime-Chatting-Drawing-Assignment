@@ -71,7 +71,7 @@ async function getUsername() {
 }
 
 // -------- chat --------
-async function storeChatHistory(roomId, username, msgId, message,isMe) {
+async function storeChatHistory(roomId, username, msgId, message,isMe, isSend) {
   if (!db) await initDatabase();
   if (db) {
     try {
@@ -82,7 +82,8 @@ async function storeChatHistory(roomId, username, msgId, message,isMe) {
         username: username,
         msgId: msgId,
         message: message,
-        isMe:isMe
+        isMe:isMe,
+        isSend:isSend
       });
       await tx.complete;
     } catch (error) {

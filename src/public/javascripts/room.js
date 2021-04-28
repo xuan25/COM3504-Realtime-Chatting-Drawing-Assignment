@@ -12,6 +12,7 @@ let isDrawOnline = false
 // Dictionary of all unsent messages (not been confirmed by the server or not been sent due to connection issue)
 // TODO : Store them into IndexDB (unsent)
 
+
 var unsent_msgs = {}
 
 var imgId;
@@ -166,7 +167,7 @@ function initChatSocket() {
 
         // TODO : Store them into IndexDB (history)
         // storeChatHistory(roomId, username, msgId, message)
-        await storeChatHistory(roomId, 'Me', msg_id, message,true)
+        await storeChatHistory(roomId, 'Me', msg_id, message,true,true);
 
     });
     socket_chat.on('recieve-chat', async function (username, msg_id, message) {
@@ -174,7 +175,7 @@ function initChatSocket() {
         // TODO : Store them into IndexDB (history)
         // a message is received
         writeOnChatHistory(msg_id, username, message, false);
-        await storeChatHistory(roomId, username, msg_id, message,false)
+        await storeChatHistory(roomId, username, msg_id, message,false,true);
 
     });
     socket_chat.on('connect', function () {
