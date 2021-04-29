@@ -151,25 +151,13 @@ exports.getOneRaw = function (req, res) {
                 if (imgs.length > 0) {
                     // parse data url
                     let img = imgs[0];
-                    imgDataUrl = img.data
-
-                    headerPayload = imgDataUrl.split(",")
-                    header = headerPayload[0]
-                    payload = headerPayload[1]
-
-                    protocolType = header.split(":")
-                    protocol = protocolType[0]
-                    type = protocolType[1]
-
-                    rawTypeEncodeType = type.split(";")
-                    rawType = rawTypeEncodeType[0]
-                    encodeType = rawTypeEncodeType[1]
+                    datameta = parseDataUrl(img.data)
                     
                     // decode base64
-                    const rawDataBuffer = Buffer.from(payload, encodeType);
+                    const rawDataBuffer = Buffer.from(datameta.payload, datameta.encodeType);
                     
                     // response
-                    res.setHeader('Content-Type', rawType);
+                    res.setHeader('Content-Type', datameta.rawType);
                     res.setHeader('Content-Length', rawDataBuffer.length);
                     
                     res.send(rawDataBuffer);
@@ -180,5 +168,30 @@ exports.getOneRaw = function (req, res) {
             });
     } catch (e) {
         res.status(500).send('error ' + e);
+    }
+}
+
+/**
+ * parse data url
+ * @param dataUrl string of data url
+ * @returns info dict includs rawType, encodeType, payload
+ */
+function parseDataUrl(dataUrl){
+    headerPayload = dataUrl.split(",")
+    header = headerPayload[0]
+    payload = headerPayload[1]
+
+    protocolType = header.split(":")
+    protocol = protocolType[0]
+    type = protocolType[1]
+
+    rawTypeEncodeType = type.split(";")
+    rawType = rawTypeEncodeType[0]
+    encodeType = rawTypeEncodeType[1]
+    
+    return{
+        rawType: rawType,
+        encodeType: encodeType,
+        payload: payload
     }
 }
