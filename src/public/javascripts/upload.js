@@ -168,7 +168,64 @@ function upload() {
   }
 }
 
+/**
+ * upload the image by the internet link
+ * @param imgUrl  image url
+ * @param title title
+ * @param author author
+ * @param description description
+ */
+function uploadByUrl(imgUrl, title, author, description){
+  doUpload(title, author, description, "http", imgUrl)
+}
+/**
+ * upload the image by data Url
+ * @param  data image data
+ * @param  title title
+ * @param  author author
+ * @param  description description
+ */
+function uploadByData(data, title, author, description){
+  doUpload(title, author, description, "data", data)
+}
 
+/**
+ * 
+ * Get all the information required for submission and submit
+ * @param  title title
+ * @param  author author
+ * @param  description description
+ * @param  imgType image type
+ * @param  img image
+ */
+function doUpload(title, author, description, imgType, img){
+  $("#submitBtn").prop("disabled", true);
+  data = { title: title, author: author, desc: description, imgType: imgType, img: img }
+  json = JSON.stringify(data);
+
+  $.ajax({
+    url: "/upload",
+    type: "POST",
+    data: json,
+
+    contentType: "application/json",
+    success: function (response) {
+      if(response.code == 0){
+        successUrl = `/join/${response.data.imgId}`
+        window.location.href = successUrl;
+      }
+      else{
+        $("#submitBtn").prop("disabled", false);
+        console.log("Upload failed");
+      }
+      console.log(JSON.stringify(response));
+    },
+    error: function (xhr, status, error) {
+      $("#submitBtn").prop("disabled", false);
+      console.log(error);
+    },
+  });
+}
 
 
 
