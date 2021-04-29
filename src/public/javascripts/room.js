@@ -11,6 +11,7 @@ let isDrawOnline = false
 
 var imgId;
 var roomId;
+var roomIdDb = imgId+'_'+roomId;
   
 /**
  * Get the room id
@@ -91,7 +92,7 @@ $(document).ready(async () => {
         window.location.href=`/join/${imgId}/?roomId=${roomId}`
     }
 
-    initChatHistory(roomId);
+    initChatHistory(roomIdDb);
 });
 
 /**
@@ -113,8 +114,8 @@ function onDrawing(data){
 /**
  * Init chat history from previous sessions
  */
- async function initChatHistory(roomId) {
-    let histories = await getChatHistories(roomId);
+ async function initChatHistory(roomIdDb) {
+    let histories = await getChatHistories(roomIdDb);
     for (let history of histories) {
         writeOnChatHistory(history.msgId, history.username, history.message, history.isMe, history.isSend);
     }
@@ -171,7 +172,7 @@ function initChatSocket() {
     socket_chat.on('recieve-chat', async function (username, msg_id, message) {
         // a message is received
         writeOnChatHistory(msg_id, username, message, false, true);
-        await storeChatHistory(roomId, username, msg_id, message, false, true);
+        await storeChatHistory(roomIdDb, username, msg_id, message, false, true);
     });
     socket_chat.on('connect', function () {
         if(isChatJoined){
@@ -261,7 +262,7 @@ async function sendChatText() {
     let msg_id = 'msg_' + Math.round(Math.random() * (2 ** 53))
 
     // Store to unsent_msgs
-    storeChatHistory(roomId, 'Me', msg_id, message, true, false)
+    storeChatHistory(roomIdDb, 'Me', msg_id, message, true, false)
 
     // emit chat message if the connection is on
     if(isChatOnline){
