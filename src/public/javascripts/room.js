@@ -45,16 +45,6 @@ function getImgId() {
         return null;
     }
 }
-async function ShowChatHistory(roomId) {
-    let chat = await getChatHistories(roomId);
-    if (chat == null && chat === undefined)
-        return "unavailable";
-    else
-        for (let i = 0; i < chat.length; ++i){
-            let msg = '<b>' + chat[i]["user"] + ':</b> '+chat[i]["msg"]
-            writeOnChatHistory(msg);
-        }
-  }
 
 /**
  * Onload
@@ -136,7 +126,7 @@ function initChatSocket() {
             isChatJoined = true
             
             // TODO : Retrive history from db
-            //ShowChatHistory()
+            ShowChatHistory(roomId);
         }
         else{
             writeInfo('<b>Rejoined the room.</b>');

@@ -38,7 +38,7 @@ async function initDatabase() {
               autoIncrement: true,
             }
           );
-          chatHistoryDB.createIndex("roomURL", "roomURL", {
+          drawHistoryDB.createIndex("roomURL", "roomURL", {
             unique: false,
             multiEntry: true,
           });
@@ -135,55 +135,22 @@ async function getChatHistories(roomId) {
       return histories;
     } catch (error) {
       console.log(error);
-    }
-  } else {
-    console.log("IndexDB not available");
-  }
-}
-
-// -------- chat --------
-async function storeChatHistory(roomId, username, msgId, message, isMe, isSend) {
-  if (!db) await initDatabase();
-  if (db) {
-    try {
-      let tx = await db.transaction(CHAT_HISTORY_STORE_NAME, "readwrite");
-      let store = await tx.objectStore(CHAT_HISTORY_STORE_NAME);
-      await store.put({
-        roomId: roomId,
-        username: username,
-        msgId: msgId,
-        message: message,
-        isMe: isMe,
-        isSend: isSend
-      });
-      await tx.complete;
-    } catch (error) {
       console.log("IndexDB not available");
     }
   } else {
     console.log("IndexDB not available");
   }
 }
-
-async function getChatHistories(roomId) {
-  if (!db) await initDatabase();
-  if (db) {
-    try {
-      let tx = await db.transaction(CHAT_HISTORY_STORE_NAME, "readonly");
-      let store = await tx.objectStore(CHAT_HISTORY_STORE_NAME);
-      let index = await store.index("roomId");
-      let histories = await index.getAll(IDBKeyRange.only(roomId));
-      await tx.complete;
-      return histories;
-    } catch (error) {
-      console.log(error);
-      console.log("IndexDB not available");
-    }
-  } else {
-    console.log("IndexDB not available");
-  }
+async function ShowChatHistory(roomId) {
+  let chat = await getChatHistories(roomId);
+  if (chat == null && chat === undefined)
+      return "unavailable";
+  else
+      for (let i = 0; i < chat.length; ++i){
+          let msg = '<b>' + chat[i]["user"] + ':</b> '+chat[i]["msg"]
+          writeOnChatHistory(msg);
+      }
 }
-
 // -------- pic --------
 async function storePics(url, roomId) {
   if (!db) await initDatabase();
