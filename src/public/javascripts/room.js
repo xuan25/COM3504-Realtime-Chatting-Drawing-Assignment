@@ -9,12 +9,6 @@ let isChatOnline = false
 let isDrawJoined = false
 let isDrawOnline = false
 
-// Dictionary of all unsent messages (not been confirmed by the server or not been sent due to connection issue)
-// TODO : Store them into IndexDB (unsent)
-await storeChatHistory(roomId, 'Me', msg_id, message,true,false);
-
-var unsent_msgs = {}
-
 var imgId;
 var roomId;
   
@@ -96,6 +90,8 @@ $(document).ready(async () => {
         // Redirect to join page if username is not avaliable
         window.location.href=`/join/${imgId}/?roomId=${roomId}`
     }
+
+    initChatHistory(roomId);
 });
 
 /**
@@ -114,6 +110,15 @@ function onDrawing(data){
     socket_draw.emit('post-path', data);
 }
 
+/**
+ * Init chat history from previous sessions
+ */
+ async function initChatHistory(roomId) {
+    let histories = await getChatHistories(roomId);
+    for (let history of histories) {
+        writeOnChatHistory(history.msgId, history.username, history.message, history.isMe, history.isSend);
+    }
+}
 
 /**
  * Initialises the socket for /chat
@@ -124,9 +129,6 @@ function initChatSocket() {
         // joined a room
         if (!isChatJoined){
             isChatJoined = true
-            
-            // TODO : Retrive history from db
-            ShowChatHistory(roomId);
         }
         else{
             writeInfo('<b>Rejoined the room.</b>');
@@ -134,14 +136,14 @@ function initChatSocket() {
 
         // Post all unsent messages if the connection is back
         // If the server is disconnected, wait for all users to reconnect.
-        setTimeout(function(){
-            for (var msg_id in unsent_msgs) {
-                let message = unsent_msgs[msg_id];
-                if(message){
-                    socket_chat.emit('post-chat', msg_id, message);
-                }
-            }
-        }, 1000);
+        // setTimeout(function(){
+        //     for (var msg_id in unsent_msgs) {
+        //         let message = unsent_msgs[msg_id];
+        //         if(message){
+        //             socket_chat.emit('post-chat', msg_id, message);
+        //         }
+        //     }
+        // }, 1000);
     });
     socket_chat.on('new-member', function (userId) {
         // notifies that someone has joined the room
@@ -154,28 +156,22 @@ function initChatSocket() {
     socket_chat.on('posted-chat', async function (msg_id) {
         // message post succeed
 
-        // remove from unsent_msgs
-        message = unsent_msgs[msg_id]
-        delete unsent_msgs[msg_id]
+        // remove from unsents
+        msg = await getChatHistoryByMsgId(msg_id)
+        await deleteChatHistoryByMsgId(msg_id)
 
         // display
         let historyEle = document.getElementById(msg_id);
         historyEle.parentNode.removeChild(historyEle);
-        writeOnChatHistory(msg_id, 'Me', message, true);
+        writeOnChatHistory(msg_id, 'Me', msg.message, true, true);
 
-
-        // TODO : Store them into IndexDB (history)
-     
-        await storeChatHistory(roomId, 'Me', msg_id, message,true,true);
+        await storeChatHistory(msg.roomId, msg.username, msg.msgId, msg.message, msg.isMe, true);
 
     });
     socket_chat.on('recieve-chat', async function (username, msg_id, message) {
-      
-        // TODO : Store them into IndexDB (history)
         // a message is received
-        writeOnChatHistory(msg_id, username, message, false);
-        await storeChatHistory(roomId, username, msg_id, message,false,true);
-
+        writeOnChatHistory(msg_id, username, message, false, true);
+        await storeChatHistory(roomId, username, msg_id, message, false, true);
     });
     socket_chat.on('connect', function () {
         if(isChatJoined){
@@ -254,7 +250,7 @@ function initDrawSocket() {
  * called when the Send button is pressed. It gets the text to send from the interface
  * and sends the message via socket.io
  */
-function sendChatText() {
+async function sendChatText() {
     // get message
     let message = document.getElementById('chat-input').value;
 
@@ -265,7 +261,7 @@ function sendChatText() {
     let msg_id = 'msg_' + Math.round(Math.random() * (2 ** 53))
 
     // Store to unsent_msgs
-    unsent_msgs[msg_id] = message
+    storeChatHistory(roomId, 'Me', msg_id, message, true, false)
 
     // emit chat message if the connection is on
     if(isChatOnline){
@@ -274,7 +270,7 @@ function sendChatText() {
     
     // Clear input and show an unsent message
     document.getElementById('chat-input').value = '';
-    writeOnChatHistory(msg_id, 'Me', message + " <b>(unsent)</b>", true);
+    writeOnChatHistory(msg_id, 'Me', message, true, false);
 
     return false
 }
@@ -287,24 +283,45 @@ function sendChatText() {
  * @param message: message
  * @param isMe: my message or from others
  */
- function writeOnChatHistory(msgId, username, message, isMe) {
+ function writeOnChatHistory(msgId, username, message, isMe, isSent) {
     if (isMe){
-        $('#history').append(
-            $(`
-                <div id="${msgId}" class="m-1 ms-auto">
-                    <div class="text-end">
-                        ${username}
+        if (isSent){
+            $('#history').append(
+                $(`
+                    <div id="${msgId}" class="m-1 ms-auto">
+                        <div class="text-end">
+                            ${username}
+                        </div>
+                        <div class="card ms-auto chat-msg-me">
+                            <div class="card-body px-2 py-1">
+                                <div>
+                                    ${message}
+                                </div>
+                            </div> 
+                        </div>
                     </div>
-                    <div class="card ms-auto chat-msg-me">
-                        <div class="card-body px-2 py-1">
-                            <div>
-                                ${message}
-                            </div>
-                        </div> 
+                `)
+            )
+        }
+        else{
+            $('#history').append(
+                $(`
+                    <div id="${msgId}" class="m-1 ms-auto">
+                        <div class="text-end">
+                            ${username}
+                        </div>
+                        <div class="card ms-auto chat-msg-me">
+                            <div class="card-body px-2 py-1">
+                                <div>
+                                    ${message} <b>(unsent)</b>
+                                </div>
+                            </div> 
+                        </div>
                     </div>
-                </div>
-            `)
-        )
+                `)
+            )
+        }
+        
     }
     else{
         $('#history').append(

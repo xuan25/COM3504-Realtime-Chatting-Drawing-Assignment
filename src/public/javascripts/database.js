@@ -3,6 +3,8 @@ let db;
 const DB_NAME = "db_com3504";
 const JOIN_STORE_NAME = "store_join";
 const CHAT_HISTORY_STORE_NAME = "store_chat";
+const DRAW_HISTORY_STORE_NAME = "store_draw";
+const PICS_HISTORY_STORE_NAME = "store_pic";
 
 
 async function initDatabase() {
@@ -25,6 +27,10 @@ async function initDatabase() {
             }
           );
           chatHistoryDB.createIndex("roomId", "roomId", {
+            unique: false,
+            multiEntry: true,
+          });
+          chatHistoryDB.createIndex("msgId", "msgId", {
             unique: false,
             multiEntry: true,
           });
@@ -52,7 +58,7 @@ async function initDatabase() {
               autoIncrement: true,
             }
           );
-          chatHistoryDB.createIndex("url", "url", {
+          picsHistoryDB.createIndex("url", "url", {
             unique: false,
             multiEntry: true,
           });
@@ -141,16 +147,44 @@ async function getChatHistories(roomId) {
     console.log("IndexDB not available");
   }
 }
-async function ShowChatHistory(roomId) {
-  let chat = await getChatHistories(roomId);
-  if (chat == null && chat === undefined)
-      return "unavailable";
-  else
-      for (let i = 0; i < chat.length; ++i){
-          let msg = '<b>' + chat[i]["user"] + ':</b> '+chat[i]["msg"]
-          writeOnChatHistory(msg);
-      }
+
+async function getChatHistoryByMsgId(msgId) {
+  if (!db) await initDatabase();
+  if (db) {
+    try {
+      let tx = await db.transaction(CHAT_HISTORY_STORE_NAME, "readonly");
+      let store = await tx.objectStore(CHAT_HISTORY_STORE_NAME);
+      let index = await store.index("msgId");
+      let hisytory = await index.get(IDBKeyRange.only(msgId));
+      await tx.complete;
+      return hisytory;
+    } catch (error) {
+      console.log(error);
+      console.log("IndexDB not available");
+    }
+  } else {
+    console.log("IndexDB not available");
+  }
 }
+
+async function deleteChatHistoryByMsgId(msgId) {
+  msg = await getChatHistoryByMsgId(msgId)
+  if (!db) await initDatabase();
+  if (db) {
+    try {
+      let tx = await db.transaction(CHAT_HISTORY_STORE_NAME, "readwrite");
+      let store = await tx.objectStore(CHAT_HISTORY_STORE_NAME);
+      store.delete(IDBKeyRange.only(msg.id))
+      await tx.complete;
+    } catch (error) {
+      console.log(error);
+      console.log("IndexDB not available");
+    }
+  } else {
+    console.log("IndexDB not available");
+  }
+}
+
 // -------- pic --------
 async function storePics(url, roomId) {
   if (!db) await initDatabase();
