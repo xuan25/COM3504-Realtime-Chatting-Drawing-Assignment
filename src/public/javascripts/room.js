@@ -12,6 +12,7 @@ let isDrawOnline = false
 var imgId;
 var roomId;
 var roomIdDb = imgId+'_'+roomId;
+var color;
   
 /**
  * Get the room id
@@ -66,7 +67,7 @@ $(document).ready(async () => {
         alert("The share link has been copied to your clipboard.");
     });
 
-    
+ 
     var username = await getUsername();
     if(username){
         // UI
@@ -80,11 +81,17 @@ $(document).ready(async () => {
         initDrawSocket();
         socket_draw.emit('join', roomId, imgId, username);
 
+        //get the color
+        clr();
         // initailize canvas
-        initCanvas(onDrawing);
+        initCanvas(onDrawing, color);
         
         $('#canvas-clear').on('click', function (e) {
             cls();
+        });
+
+        $('#pencilColor').on('click', function (e) {
+            clr();
         });
     }
     else{
@@ -106,12 +113,25 @@ function cls(){
 }
 
 /**
+ * Get the pencil color when selected
+ */
+function clr(){
+    if (document.getElementById('color-red').checked == true) {c = 'red'}
+    if (document.getElementById('color-blue').checked == true) {c = 'blue'}
+    if (document.getElementById('color-yellow').checked == true) {c = 'yellow'}
+    if (document.getElementById('color-green').checked == true) {c = 'green'}
+    color = c
+}
+
+/**
  * onDrawing callback
  * emit paths when drawing
  */
 function onDrawing(data){
+    data.color = color;
     socket_draw.emit('post-path', data);
-    storeDraw(roomIdDb, data)
+    storeDraw(roomIdDb, data);
+    redrawPaths();
 }
 
 /**
@@ -233,6 +253,7 @@ function initDrawSocket() {
         // recieved a path form others
         pushPath(data)
         storeDraw(roomIdDb, data)
+        redrawPaths();
     });
 
     socket_draw.on('connect', function () {

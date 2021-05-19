@@ -3,7 +3,8 @@
  */
 
 // ink params
-let color = 'red', thickness = 4;
+
+let thickness = 4;
 
 // store all paths on the canvas
 let pathBuffer = []
@@ -53,7 +54,7 @@ function clearPaths(){
  * it inits the image canvas to draw on. It sets up the events to respond to (click, mouse on, etc.)
  * @param onDrawingCallback Callback function when user is drawing. (for socket.io)
  */
-function initCanvas(onDrawingCallback) {
+function initCanvas(onDrawingCallback, color) {
     let flag = false,
         prevX, prevY, currX, currY = 0;
     let canvasJq = $('#canvas');
@@ -152,6 +153,7 @@ function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY
     ctx.beginPath();
     ctx.moveTo(prevX, prevY);
     ctx.lineTo(currX, currY);
+
     ctx.strokeStyle = color;
     ctx.lineWidth = thickness;
     ctx.stroke();
