@@ -258,4 +258,39 @@ async function getDraw(roomURL) {
     console.log('IndexedDB not available');
   }
 }
+async function getDrawHistoryByRoomUrl(roomURL) {
+  if (!db) await initDatabase();
+  if (db) {
+    try {
+      let tx = await db.transaction(CHAT_HISTORY_STORE_NAME, "readonly");
+      let store = await tx.objectStore(CHAT_HISTORY_STORE_NAME);
+      let index = await store.index("roomURL");
+      let hisytory = await index.get(IDBKeyRange.only(roomURL));
+      await tx.complete;
+      return hisytory;
+    } catch (error) {
+      console.log(error);
+      console.log("IndexDB not available");
+    }
+  } else {
+    console.log("IndexDB not available");
+  }
+}
 
+async function deleteDrawHistoryByRoomUrl(roomURL) {
+  msg = await getDrawHistoryByRoomUrl(roomURL)
+  if (!db) await initDatabase();
+  if (db) {
+    try {
+      let tx = await db.transaction(CHAT_HISTORY_STORE_NAME, "readwrite");
+      let store = await tx.objectStore(CHAT_HISTORY_STORE_NAME);
+      store.delete(IDBKeyRange.only(msg.id))
+      await tx.complete;
+    } catch (error) {
+      console.log(error);
+      console.log("IndexDB not available");
+    }
+  } else {
+    console.log("IndexDB not available");
+  }
+}

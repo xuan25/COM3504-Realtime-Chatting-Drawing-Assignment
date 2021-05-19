@@ -6,9 +6,9 @@
     "description": "User management API",
     "termsOfService": "http://api_url/terms/",
     "contact": {
-      "name": "COM3504/6504",
-      "email": "f.ciravegna@shef.ac.uk",
-      "url": "http://shef.ac.uk"
+      "name": "Boxuan Shan, Jingxiang Qi, Ziting Zhao",
+      "email": "bshan3@sheffield.ac.uk",
+      "url": "https://github.com/ace18zz/COM3504The-Intelligent-Web"
     },
     "license": {
       "name": "Apache 2.0",
@@ -22,7 +22,7 @@
     }
   ],
   "paths": {
-    "/img/:id": {
+    "/img/{id}": {
       "get": {
         "tags": [
           "image operations"
@@ -42,7 +42,7 @@
                   "data":{
                     "id":"605c6c684431fa7cd4b36134",
                     "title":"Untitled",
-                    "author":"Harrison Qi",
+                    "author":"Jingxinag Qi",
                     "desc":"brown and white house on top of mountain",
                     "data":"data:image/gif;base64,R0lGODlhMwAxAIAAAAAAAP///yH5BAAAAAAALAAAAAAzADEAAAK8jI+pBr0PowytzotTtbm/DTqQ6C3hGXElcraA9jIr66ozVpM3nseUvYP1UEHF0FUUHkNJxhLZfEJNvol06tzwrgdLbXsFZYmSMPnHLB+zNJFbq15+SOf50+6rG7lKOjwV1ibGdhHYRVYVJ9Wnk2HWtLdIWMSH9lfyODZoZTb4xdnpxQSEF9oyOWIqp6gaI9pI1Qo7BijbFZkoaAtEeiiLeKn72xM7vMZofJy8zJys2UxsCT3kO229LH1tXAAAOw=="
                   }
