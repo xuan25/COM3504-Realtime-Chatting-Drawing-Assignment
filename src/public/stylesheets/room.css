@@ -25,3 +25,7 @@
 .drawing-canvas{
     position: absolute;
 }
+
+.kg-bg {
+    background-color: rgb(237, 237, 237);
+}
