@@ -75,7 +75,22 @@ function initCanvas(onDrawingCallback) {
         // if the flag is up, the movement of the mouse draws on the canvas
         if (e.type === 'mousemove') {
             if (flag) {                
-                data = { canvas: { width:canvasEle.width, height:canvasEle.height }, paths: [{ x1:prevX, y1:prevY, x2:currX, y2:currY }], color:color, thickness:thickness };
+                data = { 
+                    canvas: { 
+                        width: canvasEle.width, 
+                        height: canvasEle.height 
+                    }, 
+                    paths: [
+                        { 
+                            x1: prevX, 
+                            y1: prevY, 
+                            x2: currX, 
+                            y2: currY 
+                        }
+                    ], 
+                    color:color, 
+                    thickness:thickness 
+                }
                 pushPath(data);
                 onDrawingCallback(data);
             }

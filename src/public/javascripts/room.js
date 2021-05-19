@@ -93,6 +93,7 @@ $(document).ready(async () => {
     }
 
     initChatHistory(roomIdDb);
+    initDrawHistory(roomIdDb);
 });
 
 /**
@@ -100,6 +101,7 @@ $(document).ready(async () => {
  */
 function cls(){
     clearPaths();
+    clearDrawHistories(roomIdDb);
     socket_draw.emit('cls');
 }
 
@@ -109,15 +111,26 @@ function cls(){
  */
 function onDrawing(data){
     socket_draw.emit('post-path', data);
+    storeDraw(roomIdDb, data)
 }
 
 /**
  * Init chat history from previous sessions
  */
- async function initChatHistory(roomIdDb) {
+async function initChatHistory(roomIdDb) {
     let histories = await getChatHistories(roomIdDb);
     for (let history of histories) {
         writeOnChatHistory(history.msgId, history.username, history.message, history.isMe, history.isSend);
+    }
+}
+
+/**
+ * Init draw history from previous sessions
+ */
+async function initDrawHistory(roomIdDb) {
+    let histories = await getDrawHistories(roomIdDb);
+    for (let history of histories) {
+        pushPath(history)
     }
 }
 
@@ -199,10 +212,6 @@ function initDrawSocket() {
         // joined a room
         if (!isDrawJoined){
             isDrawJoined = true
-
-            // TODO : Retrive history from db
-
-
         }
         else{
             writeInfo('<b>Rejoined the room. (drawing)</b>');
@@ -223,6 +232,7 @@ function initDrawSocket() {
     socket_draw.on('recieve-path', function (data, username) {
         // recieved a path form others
         pushPath(data)
+        storeDraw(roomIdDb, data)
     });
 
     socket_draw.on('connect', function () {
@@ -236,6 +246,7 @@ function initDrawSocket() {
     socket_draw.on('cls', function () {
         // clear canvas event
         clearPaths();
+        clearDrawHistories(roomIdDb);
     });
 
     socket_draw.on('disconnect', function () {

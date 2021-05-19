@@ -7,6 +7,8 @@ const DRAW_HISTORY_STORE_NAME = "store_draw";
 const PICS_HISTORY_STORE_NAME = "store_pic";
 
 
+// -------- init --------
+
 async function initDatabase() {
   if (!db) {
     db = await idb.openDB(DB_NAME, 2, {
@@ -44,7 +46,7 @@ async function initDatabase() {
               autoIncrement: true,
             }
           );
-          drawHistoryDB.createIndex("roomURL", "roomURL", {
+          drawHistoryDB.createIndex("roomId", "roomId", {
             unique: false,
             multiEntry: true,
           });
@@ -70,6 +72,7 @@ async function initDatabase() {
     console.log("db created");
   }
 }
+
 
 // -------- join --------
 
@@ -105,7 +108,9 @@ async function getUsername() {
   }
 }
 
+
 // -------- chat --------
+
 async function storeChatHistory(roomId, username, msgId, message, isMe, isSend) {
   if (!db) await initDatabase();
   if (db) {
@@ -185,71 +190,36 @@ async function deleteChatHistoryByMsgId(msgId) {
   }
 }
 
-// -------- pic --------
-async function storePics(url, roomId) {
-  if (!db) await initDatabase();
-  if (db) {
-    try {
-      let tx = await db.transaction(PICS_HISTORY_STORE_NAME, "readwrite");
-      let store = await tx.objectStore(PICS_HISTORY_STORE_NAME);
-      await store.put({
-        roomId: roomId,
-        url: url
-      });
-      await tx.complete;
-    } catch (error) {
-      console.log("IndexDB not available");
-    }
-  } else {
-    console.log("IndexDB not available");
-  }
-}
-async function getPics(url) {
-  if (!db) await initDatabase();
-  if (db) {
-    try {
-      console.log('fetching: ' + url);
-      let tx = await imgdb.transaction(PICS_STORE_NAME, 'readonly');
-      let store = await tx.objectStore(PICS_STORE_NAME);
-      let index = await store.index('url');
-      let pics = await index.getAll(IDBKeyRange.only(url));
-      await tx.complete;
-      return pics;
-    } catch (error) {
-      console.log(error);
-    }
-  } else {
-    console.log('IndexedDB not available');
-  }
-}
+
 // -------- draw -------------
 
-async function storeDraw(roomURL, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness) {
-  if (!db) await initDatabase();
-  if (db) {
-      try {
-          let tx = await cvsdb.transaction(DRAW_STORE_NAME, 'readwrite');
-          let store = await tx.objectStore(DRAW_STORE_NAME);
-          await store.put({"roomURL": roomURL,"canvasWidth": canvasWidth,"canvasHeight": canvasHeight, "prevX": prevX, "prevY": prevY, "currX": currX, "currY": currY, "color":color,"thickness":thickness});
-          await tx.complete;
-      } catch (error) {
-          console.log('IndexedDB not available');
-      }
-      ;
-  } else {
-      console.log('IndexedDB not available');
-  }
-}
-async function getDraw(roomURL) {
+async function storeDraw(roomId, data) {
   if (!db) await initDatabase();
   if (db) {
     try {
-      let tx = await cvsdb.transaction(DRAW_STORE_NAME, 'readonly');
-      let store = await tx.objectStore(DRAW_STORE_NAME);
-      let index = await store.index("roomURL");
-      let draw = await index.getAll(IDBKeyRange.only(roomURL));
+      let tx = await db.transaction(DRAW_HISTORY_STORE_NAME, 'readwrite');
+      let store = await tx.objectStore(DRAW_HISTORY_STORE_NAME);
+      data["roomId"] = roomId
+      await store.put(data);
       await tx.complete;
-      return draw;
+    } catch (error) {
+      console.log('IndexedDB not available');
+    }
+  } else {
+    console.log('IndexedDB not available');
+  }
+}
+
+async function getDrawHistories(roomId) { 
+  if (!db) await initDatabase();
+  if (db) {
+    try {
+      let tx = await db.transaction(DRAW_HISTORY_STORE_NAME, 'readonly');
+      let store = await tx.objectStore(DRAW_HISTORY_STORE_NAME);
+      let index = await store.index("roomId");
+      let draws = await index.getAll(IDBKeyRange.only(roomId));
+      await tx.complete;
+      return draws;
     } catch (error) {
       console.log(error);
       console.log('IndexedDB not available');
@@ -258,39 +228,66 @@ async function getDraw(roomURL) {
     console.log('IndexedDB not available');
   }
 }
-async function getDrawHistoryByRoomUrl(roomURL) {
+
+async function clearDrawHistories(roomId) {
+  draws = await getDrawHistories(roomId)
   if (!db) await initDatabase();
   if (db) {
-    try {
-      let tx = await db.transaction(CHAT_HISTORY_STORE_NAME, "readonly");
-      let store = await tx.objectStore(CHAT_HISTORY_STORE_NAME);
-      let index = await store.index("roomURL");
-      let hisytory = await index.get(IDBKeyRange.only(roomURL));
-      await tx.complete;
-      return hisytory;
-    } catch (error) {
-      console.log(error);
-      console.log("IndexDB not available");
+    for (let draw of draws) {
+      try {
+        let tx = await db.transaction(DRAW_HISTORY_STORE_NAME, "readwrite");
+        let store = await tx.objectStore(DRAW_HISTORY_STORE_NAME);
+        store.delete(IDBKeyRange.only(draw.id))
+        await tx.complete;
+      } catch (error) {
+        console.log(error);
+        console.log("IndexDB not available");
+      }
     }
   } else {
     console.log("IndexDB not available");
   }
 }
 
-async function deleteDrawHistoryByRoomUrl(roomURL) {
-  msg = await getDrawHistoryByRoomUrl(roomURL)
-  if (!db) await initDatabase();
-  if (db) {
-    try {
-      let tx = await db.transaction(CHAT_HISTORY_STORE_NAME, "readwrite");
-      let store = await tx.objectStore(CHAT_HISTORY_STORE_NAME);
-      store.delete(IDBKeyRange.only(msg.id))
-      await tx.complete;
-    } catch (error) {
-      console.log(error);
-      console.log("IndexDB not available");
-    }
-  } else {
-    console.log("IndexDB not available");
-  }
-}
+
+// -------- pic --------
+
+// async function storePics(url, roomId) {
+//   if (!db) await initDatabase();
+//   if (db) {
+//     try {
+//       let tx = await db.transaction(PICS_HISTORY_STORE_NAME, "readwrite");
+//       let store = await tx.objectStore(PICS_HISTORY_STORE_NAME);
+//       await store.put({
+//         roomId: roomId,
+//         url: url
+//       });
+//       await tx.complete;
+//     } catch (error) {
+//       console.log("IndexDB not available");
+//     }
+//   } else {
+//     console.log("IndexDB not available");
+//   }
+// }
+
+// async function getPics(url) {
+//   if (!db) await initDatabase();
+//   if (db) {
+//     try {
+//       console.log('fetching: ' + url);
+//       let tx = await imgdb.transaction(PICS_STORE_NAME, 'readonly');
+//       let store = await tx.objectStore(PICS_STORE_NAME);
+//       let index = await store.index('url');
+//       let pics = await index.getAll(IDBKeyRange.only(url));
+//       await tx.complete;
+//       return pics;
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   } else {
+//     console.log('IndexedDB not available');
+//   }
+// }
+
+
