@@ -146,7 +146,6 @@ function updateInkColor(){
 function onDrawing(data){
     socket_draw.emit('post-path', data);
     storeDraw(roomIdDb, data);
-    redrawPaths();
 }
 
 /**
@@ -291,7 +290,6 @@ function initDrawSocket() {
         // recieved a path form others
         pushPath(data)
         storeDraw(roomIdDb, data)
-        redrawPaths();
     });
 
     socket_draw.on('connect', function () {
