@@ -84,7 +84,6 @@ async function initDatabase() {
 
       },
     });
-    console.log("db created");
   }
 }
 
