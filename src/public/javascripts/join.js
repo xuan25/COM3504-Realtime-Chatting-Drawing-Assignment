@@ -58,6 +58,16 @@ $(document).ready(async () => {
     roomId = $('#roomId').val();
     username = $('#username').val();
 
+    if(username === ''){
+      alert('Please input an username')
+      return
+    }
+
+    if(roomId === ''){
+      alert('Please input an room ID')
+      return
+    }
+
     await storeUsername(username);
     window.location.href=`/room/${imgId}/${roomId}/`
   });
