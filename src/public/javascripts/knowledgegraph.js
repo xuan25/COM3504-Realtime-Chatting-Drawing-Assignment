@@ -4,13 +4,13 @@ const apiKey= 'AIzaSyAG7w627q-djB4gTTahssufwNOImRqdYKM';
 /**
  * Init kg
  */
-function initKg(){
+function initKg(selectHandler){
     // Init params
     kgConfig = {
         'limit': 10,
         'languages': ['en'],
         'maxDescChars': 100,
-        'selectHandler': kgItemSelected,
+        'selectHandler': selectHandler,
     }
     KGSearchWidget(apiKey, document.getElementById("kg-input"), kgConfig);
 
@@ -23,7 +23,7 @@ function initKg(){
                 'languages': ['en'],
                 'types': [type],
                 'maxDescChars': 100,
-                'selectHandler': kgItemSelected,
+                'selectHandler': selectHandler,
             }
         }
         else {
@@ -31,21 +31,11 @@ function initKg(){
                 'limit': 10,
                 'languages': ['en'],
                 'maxDescChars': 100,
-                'selectHandler': kgItemSelected,
+                'selectHandler': selectHandler,
             }
         }
         KGSearchWidget(apiKey, document.getElementById("kg-input"), kgConfig);
     });
-}
-
-/**
- * callback called when an element in the widget is selected
- * @param event the Google Graph widget event {@link https://developers.google.com/knowledge-graph/how-tos/search-widget}
- */
-function kgItemSelected(event){
-    let row = event.row;
-    console.log(row)
-    showKgTag(row)
 }
 
 /**
@@ -55,13 +45,13 @@ function kgItemSelected(event){
 function showKgTag(data){
     $('#kg-tags').append(
         $(`
-            <div class='card mb-1 border-3' style="border-color: ${inkColor}">
+            <div class='card mb-1 border-3' style="border-color: ${data.color}">
                 <div class="card-body">
-                    <h3>${data.name}</h3>
-                    <h6>${data.description}</h6>
-                    <div>${data.rc}</div>
+                    <h3>${data.kg.name}</h3>
+                    <h6>${data.kg.description}</h6>
+                    <div>${data.kg.rc}</div>
                     <div>
-                        <a href="${data.qc}" target="_blank">
+                        <a href="${data.kg.qc}" target="_blank">
                             Link to Webpage
                         </a>
                     </div>

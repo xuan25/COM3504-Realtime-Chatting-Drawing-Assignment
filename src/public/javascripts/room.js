@@ -1,13 +1,19 @@
 // socket.io
-let socket_chat=io.connect('/chat');
-let socket_draw=io.connect('/draw');
+let socket_chat = io.connect('/chat');
+let socket_draw = io.connect('/draw');
+let socket_kg = io.connect('/kg');
 
 // Chatting socket.io status
 let isChatJoined = false
 let isChatOnline = false
+
 // Drawing socket.io status
 let isDrawJoined = false
 let isDrawOnline = false
+
+// Kg socket.io status
+let isKgJoined = false
+let isKgOnline = false
 
 var imgId;
 var roomId;
@@ -81,6 +87,9 @@ $(document).ready(async () => {
         initDrawSocket();
         socket_draw.emit('join', roomId, imgId, username);
 
+        initKgSocket();
+        socket_kg.emit('join', roomId, imgId, username);
+
         //get the color
         updateInkColor();
         // initailize canvas
@@ -101,7 +110,7 @@ $(document).ready(async () => {
 
     initChatHistory(roomIdDb);
     initDrawHistory(roomIdDb);
-    initKg();
+    initKg(kgItemSelected);
 });
 
 /**
@@ -132,6 +141,18 @@ function onDrawing(data){
     socket_draw.emit('post-path', data);
     storeDraw(roomIdDb, data);
     redrawPaths();
+}
+
+/**
+ * callback called when an element in the widget is selected
+ * @param event the Google Graph widget event {@link https://developers.google.com/knowledge-graph/how-tos/search-widget}
+ */
+ function kgItemSelected(event){
+    let row = event.row;
+    data = {color: inkColor, kg: row}
+
+    socket_kg.emit('post-kg', data);
+    showKgTag(data)
 }
 
 /**
@@ -275,6 +296,43 @@ function initDrawSocket() {
             // connection has lost due to some network issue
             isDrawOnline = false
             writeInfo('<b>The connection was lost. (drawing)</b>');
+        }
+    });
+}
+
+/**
+ * Initialises the socket for /kg
+ */
+ function initKgSocket() {
+    socket_kg.on('joined', async function () {
+        isKgOnline = true
+        // joined a room
+        if (!isKgJoined){
+            isKgJoined = true
+        }
+        else{
+            writeInfo('<b>Rejoined the room. (kg)</b>');
+        }
+    });
+    
+    socket_kg.on('recieve-kg', function (data, username) {
+        // recieved a kg form others
+        showKgTag(data)
+    });
+
+    socket_kg.on('connect', function () {
+        if(isKgJoined){
+            // Auto rejoin the room if the connection has back
+            writeInfo('<b>Reconnected to the server. (kg)</b>');
+            socket_kg.emit('join', roomId, imgId, username);
+        }
+    });
+
+    socket_kg.on('disconnect', function () {
+        if(isDrawJoined){
+            // connection has lost due to some network issue
+            isDrawOnline = false
+            writeInfo('<b>The connection was lost. (kg)</b>');
         }
     });
 }

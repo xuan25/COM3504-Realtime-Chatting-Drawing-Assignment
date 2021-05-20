@@ -173,4 +173,68 @@ exports.init = function (io) {
             });
         } catch (e) { }
     });
+
+    /**
+     * Knowledge Graph socket info dictionary
+     * for retriving user infos by socket id
+     */
+     const socket_kg_info_dict = {};
+
+    /**
+     * Knowledge Graph namespace
+     */
+    const kg = io.of("/kg").on("connection", function (socket) {
+        try {
+            /**
+             * "join" when user create or join a room
+             */
+            socket.on("join", function (room, image_uri, username) {
+                // generate a socket room identifier
+                socket_room = room + " @ " + image_uri;
+
+                // store user info
+                socket_kg_info_dict[socket.id] = {
+                    socket_room: socket_room,
+                    username: username,
+                };
+
+                // let user join
+                socket.join(socket_room);
+                socket.emit("joined");
+            });
+
+            /**
+             * "post-kg" when user post a kg
+             * broadcast to others via "recieve-kg"
+             */
+            socket.on("post-kg", function (data) {
+                // socket validation
+                socket_info = socket_kg_info_dict[socket.id];
+                if (!socket_info) {
+                    return;
+                }
+
+                // retrive user info
+                socket_room = socket_info["socket_room"];
+                username = socket_info["username"];
+
+                // broadcast to others
+                socket.broadcast.to(socket_room).emit("recieve-kg", data, username);
+            });
+
+            /**
+             * "disconnect" when a user disconnected
+             */
+            socket.on("disconnect", function () {
+                // socket validation
+                socket_info = socket_kg_info_dict[socket.id];
+                if (!socket_info) {
+                    return;
+                }
+
+                // delete user info
+                delete socket_kg_info_dict[socket.id];
+            });
+        } catch (e) { }
+    });
 };
