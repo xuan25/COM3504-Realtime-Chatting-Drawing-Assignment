@@ -22,6 +22,76 @@
     }
   ],
   "paths": {
+    "/img/all": {
+      "get": {
+        "tags": [
+          "image operations"
+        ],
+        "description": "get full data in json for all images",
+        "operationId": "all img.id",
+        "responses": {
+          "200": {
+            "description": "Correct image id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items":{
+                    "$ref" :"#/components/schemas/ImgObj"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Invalid data",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMsg"
+                },
+                "example": "Invalid data"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/img/meta": {
+      "get": {
+        "tags": [
+          "image operations"
+        ],
+        "description": "Get metadata and data of an image",
+        "operationId": "img.id",
+        "responses": {
+          "200": {
+            "description": "Correct image id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items":{
+                  "$ref": "#/components/schemas/ImgMetaObj"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Invalid data",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMsg"
+                },
+                "example": "Invalid data"
+              }
+            }
+          }
+        }
+      }
+    },
     "/img/{id}": {
       "get": {
         "tags": [
@@ -29,6 +99,48 @@
         ],
         "description": "Get metadata and data of an image",
         "operationId": "img.id",
+        "responses": {
+          "200": {
+            "description": "Correct image id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImgObj"
+                },
+                "example": {
+                  "code":0,
+                  "data":{
+                    "id":"605c6c684431fa7cd4b36134",
+                    "title":"Untitled",
+                    "author":"Jingxinag Qi",
+                    "desc":"brown and white house on top of mountain",
+                    "data":"data:image/gif;base64,R0lGODlhMwAxAIAAAAAAAP///yH5BAAAAAAALAAAAAAzADEAAAK8jI+pBr0PowytzotTtbm/DTqQ6C3hGXElcraA9jIr66ozVpM3nseUvYP1UEHF0FUUHkNJxhLZfEJNvol06tzwrgdLbXsFZYmSMPnHLB+zNJFbq15+SOf50+6rG7lKOjwV1ibGdhHYRVYVJ9Wnk2HWtLdIWMSH9lfyODZoZTb4xdnpxQSEF9oyOWIqp6gaI9pI1Qo7BijbFZkoaAtEeiiLeKn72xM7vMZofJy8zJys2UxsCT3kO229LH1tXAAAOw=="
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Invalid data",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMsg"
+                },
+                "example": "Invalid data"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/img/meta/{id}": {
+      "get": {
+        "tags": [
+          "image operations"
+        ],
+        "description": "Get metadata and data of an image",
+        "operationId": "img.metaid",
         "responses": {
           "200": {
             "description": "Correct image id",
@@ -46,6 +158,39 @@
                     "desc":"brown and white house on top of mountain",
                     "data":"data:image/gif;base64,R0lGODlhMwAxAIAAAAAAAP///yH5BAAAAAAALAAAAAAzADEAAAK8jI+pBr0PowytzotTtbm/DTqQ6C3hGXElcraA9jIr66ozVpM3nseUvYP1UEHF0FUUHkNJxhLZfEJNvol06tzwrgdLbXsFZYmSMPnHLB+zNJFbq15+SOf50+6rG7lKOjwV1ibGdhHYRVYVJ9Wnk2HWtLdIWMSH9lfyODZoZTb4xdnpxQSEF9oyOWIqp6gaI9pI1Qo7BijbFZkoaAtEeiiLeKn72xM7vMZofJy8zJys2UxsCT3kO229LH1tXAAAOw=="
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Invalid data",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMsg"
+                },
+                "example": "Invalid data"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/img/raw/{id}": {
+      "get": {
+        "tags": [
+          "image operations"
+        ],
+        "description": "Get an image",
+        "operationId": "img.rawid",
+        "responses": {
+          "200": {
+            "description": "Correct image id",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
                 }
               }
             }
@@ -119,326 +264,259 @@
         }
       }
     },
+    "/join/": {
+      "get": {
+          "description": " get join page for a image",
+          "parameters": [
+              {
+                  "name": "imgId",
+                  "in": "path",
+                  "required": true,
+                  "schema": {
+                      "type": "string"
+                  }
+              },
+              {
+                  "name": "roomId",
+                  "in": "query",
+                  "required": false,
+                  "schema": {
+                      "type": "string"
+                  },
+                  "allowEmptyValue": true
+              }
+          ],
+          "operationId": "getJoinPage",
+          "responses": {
+              "default": {
+                  "description": "Correct input of join structure",
+                  "content": {
+                      "text/html": {
+                        "schema": {
+                          "type": "string"
 
-    "/childDemo": {
-      "post": {
-        "tags": [
-          "silly operations"
-        ],
-        "description": "add some pointless information about a child's age and the name of a parent",
-        "operationId": "child",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChildDemo"
+                      }
+                  }
               }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Correct input of Child structure",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ChildDemo"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorDemo"
-                },
-                "example": {
-                  "message": "age is not a number",
-                  "internal_code": "missing_parameters"
-                }
-              }
+          }
+      }
+  }
+},
+"/join/offline": {
+  "get": {
+    "tags": [
+      "offline join operations"
+    ],
+    "description": "get join page for service worker",
+    "operationId": "offline",
+
+    "responses": {
+      "200": {
+        "description": "Correct input of join structure",
+        "content": {
+          "text/html": {
+            "schema": {
+              "$ref": "#/components/schemas/joinType"
             }
           }
         }
-      }
-    },
-    "/adultDemo": {
-         "post": {
-           "tags": [
-             "silly operations"
-           ],
-           "description": "add some pointless information about an adult like age, weight and height",
-           "operationId": "adult",
-           "requestBody": {
-             "content": {
-               "application/json": {
-                 "schema": {
-                   "$ref": "#/components/schemas/AdultDemo"
-                 }
-               }
-             },
-             "required": true
-           },
-           "responses": {
-             "200": {
-               "description": "Correct input of Adult",
-               "content": {
-                 "application/json": {
-                   "schema": {
-                     "$ref": "#/components/schemas/AdultDemo"
-                   }
-                 }
-               }
-             },
-             "401": {
-               "description": "Missing parameters",
-               "content": {
-                 "application/json": {
-                   "schema": {
-                     "$ref": "#/components/schemas/ErrorDemo"
-                   },
-                   "example": {
-                     "message": "age is not a number",
-                     "internal_code": "missing_parameters"
-                   }
-                 }
-               }
-             }
-           }
-         }
-       }
-  },
-  "components": {
-      "schemas": {
-        "statusCode": {
-          "type": "integer",
-          "description": "Internal status code for response, value 0 for no error",
-          "example": 0
-        },
-        "imgId": {
-          "type": "string",
-          "description": "Image ID",
-          "example": "605c6c684431fa7cd4b36134"
-        },
-        "imgTitle": {
-          "type": "string",
-          "description": "Image title",
-          "example": "Untitled - 1"
-        },
-        "imgAuthor": {
-          "type": "string",
-          "description": "Image author",
-          "example": "User1"
-        },
-        "imgDesc": {
-          "type": "string",
-          "description": "Image description",
-          "example": "This is an image"
-        },
-        "imgData": {
-          "type": "string",
-          "description": "Data url of an image",
-          "example": "data:image/gif;base64,R0lGODlhMwAxAIAAAAAAAP///yH5BAAAAAAALAAAAAAzADEAAAK8jI+pBr0PowytzotTtbm/DTqQ6C3hGXElcraA9jIr66ozVpM3nseUvYP1UEHF0FUUHkNJxhLZfEJNvol06tzwrgdLbXsFZYmSMPnHLB+zNJFbq15+SOf50+6rG7lKOjwV1ibGdhHYRVYVJ9Wnk2HWtLdIWMSH9lfyODZoZTb4xdnpxQSEF9oyOWIqp6gaI9pI1Qo7BijbFZkoaAtEeiiLeKn72xM7vMZofJy8zJys2UxsCT3kO229LH1tXAAAOw=="
-        },
-
-        "ImgMetaObj": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "$ref": "#/components/schemas/imgId"
-            },
-            "title": {
-              "$ref": "#/components/schemas/imgTitle"
-            },
-            "author": {
-              "$ref": "#/components/schemas/imgAuthor"
-            },
-            "desc": {
-              "$ref": "#/components/schemas/imgDesc"
+      },
+      "500": {
+        "description": "Missing parameters",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorMsg"
             }
-          }
-        },
-
-        "ImgMetaRes": {
-          "type": "object",
-          "properties": {
-            "code": {
-              "$ref": "#/components/schemas/statusCode"
-            },
-            "data": {
-              "$ref": "#/components/schemas/ImgMetaObj"
-            }
-          }
-        },
-
-        "ImgMetaDataObj": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "$ref": "#/components/schemas/imgId"
-            },
-            "title": {
-              "$ref": "#/components/schemas/imgTitle"
-            },
-            "author": {
-              "$ref": "#/components/schemas/imgAuthor"
-            },
-            "desc": {
-              "$ref": "#/components/schemas/imgDesc"
-            },
-            "data": {
-              "$ref": "#/components/schemas/imgDesc"
-            }
-          }
-        },
-
-        "ImgMetaDataRes": {
-          "type": "object",
-          "properties": {
-            "code": {
-              "$ref": "#/components/schemas/statusCode"
-            },
-            "data": {
-              "$ref": "#/components/schemas/ImgMetaDataObj"
-            }
-          }
-        },
-
-        "uploadType": {
-          "type": "string",
-          "description": "Upload method (http|data)",
-          "example": "http"
-        },
-
-        "uploadImg": {
-          "type": "string",
-          "description": "Either http url or data url",
-          "example": "http"
-        },
-
-        "uploadReq": {
-          "type": "object",
-          "properties":{
-            "title": {
-              "$ref": "#/components/schemas/imgTitle"
-            },
-            "author": {
-              "$ref": "#/components/schemas/imgAuthor"
-            },
-            "desc": {
-              "$ref": "#/components/schemas/imgDesc"
-            },
-            "imgType": {
-              "$ref": "#/components/schemas/uploadType"
-            },
-            "img": {
-              "$ref": "#/components/schemas/uploadImg"
-            }
-          }
-        },
-
-        "uploadObj": {
-          "type": "object",
-          "properties": {
-            "imgId": {
-              "$ref": "#/components/schemas/imgId"
-            }
-          }
-        },
-
-        "uploadRes": {
-          "type": "object",
-          "properties": {
-            "code": {
-              "$ref": "#/components/schemas/statusCode"
-            },
-            "data": {
-              "$ref": "#/components/schemas/uploadObj"
-            }
-          }
-        },
-
-        "ErrorMsg": {
-          "type": "string",
-          "description": "Error message",
-          "example": "Invalid data!"
-        },
-
-
-
-        "ageDemo": {
-          "type": "integer",
-          "description": "age of a person",
-          "example": 9
-        },
-        "heightDemo": {
-          "type": "integer",
-          "description": "height in cm",
-          "example": 185
-        },
-        "weightDemo": {
-          "type": "integer",
-          "description": "weight in kg",
-          "example": 65
-        },
-        "nameDemo": {
-          "type": "string",
-          "example": "John"
-        },
-        "surnameDemo": {
-          "type": "string",
-          "example": "White"
-        },
-        "AdultDemo": {
-          "type": "object",
-          "properties": {
-            "age": {
-              "$ref": "#/components/schemas/ageDemo"
-            },
-            "height": {
-              "$ref": "#/components/schemas/heightDemo"
-            },
-            "weight": {
-              "$ref": "#/components/schemas/weightDemo"
-            }
-          }
-        },
-        "ChildDemo": {
-          "type": "object",
-          "properties": {
-            "age": {
-              "$ref": "#/components/schemas/ageDemo"
-            },
-            "parent": {
-              "$ref": "#/components/schemas/ParentDemo"
-            }
-          }
-        },
-        "ParentDemo": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "$ref": "#/components/schemas/nameDemo"
-            },
-            "surname": {
-              "$ref": "#/components/schemas/surnameDemo"
-            }
-          }
-        },
-        "ErrorDemo": {
-          "type": "object",
-          "properties": {
-            "message": {
-              "type": "string"
-            },
-            "internal_code": {
-              "type": "string"
+        
             }
           }
         }
       }
     }
+  }
+},
+
+"components": {
+  "schemas": {
+    "statusCode": {
+      "type": "integer",
+      "description": "Internal status code for response, value 0 for no error",
+      "example": 0
+    },
+    "imgId": {
+      "type": "string",
+      "description": "Image ID",
+      "example": "605c6c684431fa7cd4b36134"
+    },
+    "imgTitle": {
+      "type": "string",
+      "description": "Image title",
+      "example": "Untitled - 1"
+    },
+    "imgAuthor": {
+      "type": "string",
+      "description": "Image author",
+      "example": "User1"
+    },
+    "imgDesc": {
+      "type": "string",
+      "description": "Image description",
+      "example": "This is an image"
+    },
+    "imgData": {
+      "type": "string",
+      "description": "Data url of an image",
+      "example": "data:image/gif;base64,R0lGODlhMwAxAIAAAAAAAP///yH5BAAAAAAALAAAAAAzADEAAAK8jI+pBr0PowytzotTtbm/DTqQ6C3hGXElcraA9jIr66ozVpM3nseUvYP1UEHF0FUUHkNJxhLZfEJNvol06tzwrgdLbXsFZYmSMPnHLB+zNJFbq15+SOf50+6rG7lKOjwV1ibGdhHYRVYVJ9Wnk2HWtLdIWMSH9lfyODZoZTb4xdnpxQSEF9oyOWIqp6gaI9pI1Qo7BijbFZkoaAtEeiiLeKn72xM7vMZofJy8zJys2UxsCT3kO229LH1tXAAAOw=="
+    },
+
+    "ImgObj": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/components/schemas/imgId"
+        },
+        "title": {
+          "$ref": "#/components/schemas/imgTitle"
+        },
+        "author": {
+          "$ref": "#/components/schemas/imgAuthor"
+        },
+        "desc": {
+          "$ref": "#/components/schemas/imgDesc"
+        }
+      }
+    },
+    "ImgMetaObj": {
+      "type": "object",
+      "properties": {
+        "code":{
+          "$ref":"#/components/schemas/statusCode"
+        },
+        "id": {
+          "$ref": "#/components/schemas/imgId"
+        },
+        "title": {
+          "$ref": "#/components/schemas/imgTitle"
+        },
+        "author": {
+          "$ref": "#/components/schemas/imgAuthor"
+        },
+        "desc": {
+          "$ref": "#/components/schemas/imgDesc"
+        }
+      }
+    },
+
+    "ImgMetaRes": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/components/schemas/statusCode"
+        },
+        "data": {
+          "$ref": "#/components/schemas/ImgObj"
+        }
+      }
+    },
+
+    "ImgMetaDataObj": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/components/schemas/imgId"
+        },
+        "title": {
+          "$ref": "#/components/schemas/imgTitle"
+        },
+        "author": {
+          "$ref": "#/components/schemas/imgAuthor"
+        },
+        "desc": {
+          "$ref": "#/components/schemas/imgDesc"
+        },
+        "data": {
+          "$ref": "#/components/schemas/imgDesc"
+        }
+      }
+    },
+
+    "ImgMetaDataRes": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/components/schemas/statusCode"
+        },
+        "data": {
+          "$ref": "#/components/schemas/ImgMetaDataObj"
+        }
+      }
+    },
+
+    "uploadType": {
+      "type": "string",
+      "description": "Upload method (http|data)",
+      "example": "http"
+    },
+
+    "uploadImg": {
+      "type": "string",
+      "description": "Either http url or data url",
+      "example": "http"
+    },
+
+    "uploadReq": {
+      "type": "object",
+      "properties":{
+        "title": {
+          "$ref": "#/components/schemas/imgTitle"
+        },
+        "author": {
+          "$ref": "#/components/schemas/imgAuthor"
+        },
+        "desc": {
+          "$ref": "#/components/schemas/imgDesc"
+        },
+        "imgType": {
+          "$ref": "#/components/schemas/uploadType"
+        },
+        "img": {
+          "$ref": "#/components/schemas/uploadImg"
+        }
+      }
+    },
+
+    "uploadObj": {
+      "type": "object",
+      "properties": {
+        "imgId": {
+          "$ref": "#/components/schemas/imgId"
+        }
+      }
+    },
+
+    "uploadRes": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/components/schemas/statusCode"
+        },
+        "data": {
+          "$ref": "#/components/schemas/uploadObj"
+        }
+      }
+    },
+    "joinType": {
+      "type": "string",
+      "description": "join method (http|data)",
+      "example": "http"
+    },
+    "ErrorMsg": {
+      "type": "string",
+      "description": "Error message",
+      "example": "Invalid data!"
+    }
+  
+  }
+}
 }
