@@ -22,6 +22,7 @@
     }
   ],
   "paths": {
+    
     "/img/all": {
       "get": {
         "tags": [
@@ -264,6 +265,39 @@
         }
       }
     },
+    "/search": {
+      "get": {
+          "description": " Search room by auther",
+          "parameters": [
+              {
+                  "name": "authorName",
+                  "in": "query",
+                  "required": true,
+                  "schema": {
+                      "type": "string"
+                  },
+                  "allowEmptyValue": true
+              }
+          ],
+          "operationId": "searchAuthor",
+          "responses": {
+              "default": {
+                  "description": "Correct input of search structure",
+                  "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "array",
+                          "items":{
+                          "$ref": "#/components/schemas/ImgMetaObj"
+                          }
+
+                      }
+                  } 
+              }
+          }
+      }
+  }
+},
     "/join/": {
       "get": {
           "description": " get join page for a image",
