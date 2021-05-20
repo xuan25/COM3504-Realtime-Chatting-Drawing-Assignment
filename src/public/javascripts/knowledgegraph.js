@@ -60,3 +60,11 @@ function showKgTag(data){
         `)
     )
 }
+
+
+/**
+ * clear kg tags in the list
+ */
+function clearKgTags(){
+    $('#kg-tags').empty()
+}

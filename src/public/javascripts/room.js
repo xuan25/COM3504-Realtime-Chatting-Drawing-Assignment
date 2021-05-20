@@ -96,7 +96,10 @@ $(document).ready(async () => {
         initCanvas(onDrawing);
         
         $('#canvas-clear').on('click', function (e) {
+            // clear canvas
             cls();
+            // clear corresponding kg tags
+            clearKgTags();
         });
 
         $('#pencilColor').on('click', function (e) {
@@ -289,6 +292,9 @@ function initDrawSocket() {
         // clear canvas event
         clearPaths();
         clearDrawHistories(roomIdDb);
+
+        // clear corresponding kg tags
+        clearKgTags();
     });
 
     socket_draw.on('disconnect', function () {
