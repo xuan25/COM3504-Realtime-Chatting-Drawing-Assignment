@@ -1,4 +1,4 @@
-let db;
+let indexedDb;
 
 const DB_NAME = "db_com3504";
 const JOIN_STORE_NAME = "store_join";
@@ -10,8 +10,8 @@ const PICS_HISTORY_STORE_NAME = "store_pic";
 // -------- init --------
 
 async function initDatabase() {
-  if (!db) {
-    db = await idb.openDB(DB_NAME, 2, {
+  if (!indexedDb) {
+    indexedDb = await idb.openDB(DB_NAME, 2, {
       upgrade(upgradeDb, oldVersion, newVersion) {
 
         // join
@@ -77,12 +77,12 @@ async function initDatabase() {
 // -------- join --------
 
 async function storeUsername(username) {
-  if (!db) {
+  if (!indexedDb) {
     await initDatabase();
   }
-  if (db) {
+  if (indexedDb) {
     try {
-      await db.put(JOIN_STORE_NAME, username, "username");
+      await indexedDb.put(JOIN_STORE_NAME, username, "username");
     } catch (error) {
       console.log("IndexDB not available");
     }
@@ -92,13 +92,13 @@ async function storeUsername(username) {
 }
 
 async function getUsername() {
-  if (!db) {
+  if (!indexedDb) {
     await initDatabase();
   }
 
-  if (db) {
+  if (indexedDb) {
     try {
-      username = await db.get(JOIN_STORE_NAME, "username");
+      username = await indexedDb.get(JOIN_STORE_NAME, "username");
       return username;
     } catch (error) {
       console.log(error);
@@ -112,10 +112,10 @@ async function getUsername() {
 // -------- chat --------
 
 async function storeChatHistory(roomId, username, msgId, message, isMe, isSend) {
-  if (!db) await initDatabase();
-  if (db) {
+  if (!indexedDb) await initDatabase();
+  if (indexedDb) {
     try {
-      let tx = await db.transaction(CHAT_HISTORY_STORE_NAME, "readwrite");
+      let tx = await indexedDb.transaction(CHAT_HISTORY_STORE_NAME, "readwrite");
       let store = await tx.objectStore(CHAT_HISTORY_STORE_NAME);
       await store.put({
         roomId: roomId,
@@ -135,10 +135,10 @@ async function storeChatHistory(roomId, username, msgId, message, isMe, isSend) 
 }
 
 async function getChatHistories(roomId) {
-  if (!db) await initDatabase();
-  if (db) {
+  if (!indexedDb) await initDatabase();
+  if (indexedDb) {
     try {
-      let tx = await db.transaction(CHAT_HISTORY_STORE_NAME, "readonly");
+      let tx = await indexedDb.transaction(CHAT_HISTORY_STORE_NAME, "readonly");
       let store = await tx.objectStore(CHAT_HISTORY_STORE_NAME);
       let index = await store.index("roomId");
       let histories = await index.getAll(IDBKeyRange.only(roomId));
@@ -154,10 +154,10 @@ async function getChatHistories(roomId) {
 }
 
 async function getChatHistoryByMsgId(msgId) {
-  if (!db) await initDatabase();
-  if (db) {
+  if (!indexedDb) await initDatabase();
+  if (indexedDb) {
     try {
-      let tx = await db.transaction(CHAT_HISTORY_STORE_NAME, "readonly");
+      let tx = await indexedDb.transaction(CHAT_HISTORY_STORE_NAME, "readonly");
       let store = await tx.objectStore(CHAT_HISTORY_STORE_NAME);
       let index = await store.index("msgId");
       let hisytory = await index.get(IDBKeyRange.only(msgId));
@@ -174,10 +174,10 @@ async function getChatHistoryByMsgId(msgId) {
 
 async function deleteChatHistoryByMsgId(msgId) {
   msg = await getChatHistoryByMsgId(msgId)
-  if (!db) await initDatabase();
-  if (db) {
+  if (!indexedDb) await initDatabase();
+  if (indexedDb) {
     try {
-      let tx = await db.transaction(CHAT_HISTORY_STORE_NAME, "readwrite");
+      let tx = await indexedDb.transaction(CHAT_HISTORY_STORE_NAME, "readwrite");
       let store = await tx.objectStore(CHAT_HISTORY_STORE_NAME);
       store.delete(IDBKeyRange.only(msg.id))
       await tx.complete;
@@ -194,10 +194,10 @@ async function deleteChatHistoryByMsgId(msgId) {
 // -------- draw -------------
 
 async function storeDraw(roomId, data) {
-  if (!db) await initDatabase();
-  if (db) {
+  if (!indexedDb) await initDatabase();
+  if (indexedDb) {
     try {
-      let tx = await db.transaction(DRAW_HISTORY_STORE_NAME, 'readwrite');
+      let tx = await indexedDb.transaction(DRAW_HISTORY_STORE_NAME, 'readwrite');
       let store = await tx.objectStore(DRAW_HISTORY_STORE_NAME);
       data["roomId"] = roomId
       await store.put(data);
@@ -211,10 +211,10 @@ async function storeDraw(roomId, data) {
 }
 
 async function getDrawHistories(roomId) { 
-  if (!db) await initDatabase();
-  if (db) {
+  if (!indexedDb) await initDatabase();
+  if (indexedDb) {
     try {
-      let tx = await db.transaction(DRAW_HISTORY_STORE_NAME, 'readonly');
+      let tx = await indexedDb.transaction(DRAW_HISTORY_STORE_NAME, 'readonly');
       let store = await tx.objectStore(DRAW_HISTORY_STORE_NAME);
       let index = await store.index("roomId");
       let draws = await index.getAll(IDBKeyRange.only(roomId));
@@ -231,11 +231,11 @@ async function getDrawHistories(roomId) {
 
 async function clearDrawHistories(roomId) {
   draws = await getDrawHistories(roomId)
-  if (!db) await initDatabase();
-  if (db) {
+  if (!indexedDb) await initDatabase();
+  if (indexedDb) {
     for (let draw of draws) {
       try {
-        let tx = await db.transaction(DRAW_HISTORY_STORE_NAME, "readwrite");
+        let tx = await indexedDb.transaction(DRAW_HISTORY_STORE_NAME, "readwrite");
         let store = await tx.objectStore(DRAW_HISTORY_STORE_NAME);
         store.delete(IDBKeyRange.only(draw.id))
         await tx.complete;
