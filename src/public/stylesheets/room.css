@@ -29,3 +29,7 @@
 .kg-bg {
     background-color: rgb(237, 237, 237);
 }
+
+.kge-search-picker {
+    z-index: 1;
+}

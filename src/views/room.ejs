@@ -24,6 +24,10 @@
     <script src="/javascripts/room.js"></script>
     <script src="/javascripts/canvas.js"></script>
 
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.css">
+    <script type="text/javascript" src="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.js"></script>
+    <script src="/javascripts/knowledgegraph.js"></script>
+
     <link rel='stylesheet' href='/stylesheets/room.css'/>
 </head>
 <body>
@@ -61,7 +65,7 @@
     </div>
 
     
-    <div class="row w-100">
+    <div class="row w-100" style="height: 50vh">
         <!-- Image/Drawing area -->
         <div class="col">
             <div class="p-2 d-flex justify-content-center align-items-center" style="height: 50vh">
@@ -70,22 +74,18 @@
             </div>
         </div>
         <!-- Knowledge graph area -->
-        <div class="col-3 mb-1 kg-bg">
-            <div class=" d-flex flex-column">
-                <p>
-                    Knowledge graph search
-                </p>
+        <div class="col-3 mp-1 kg-bg overflow-auto" style="height: 50vh">
+            <div class="d-flex flex-column">
+                <div class="card my-3">
+                    <div class="card-body">
+                        <input type="text" class="form-control" id="kg-input" placeholder="Search">
+                        <input type="text" class="form-control" id="kg-type" placeholder="Type">
+                    </div>
+                </div>
                 <div id="kg-tags" class="d-flex flex-column">
-                    <p>
-                        Knowledge graph tag 1
-                    </p>
-                    <p>
-                        Knowledge graph tag 2
-                    </p>
+                   <!-- KG tags goes here -->
                 </div>
             </div>
-            
-            
         </div>
     </div>
     

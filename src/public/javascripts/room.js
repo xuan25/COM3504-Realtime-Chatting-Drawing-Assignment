@@ -101,6 +101,7 @@ $(document).ready(async () => {
 
     initChatHistory(roomIdDb);
     initDrawHistory(roomIdDb);
+    initKg();
 });
 
 /**
