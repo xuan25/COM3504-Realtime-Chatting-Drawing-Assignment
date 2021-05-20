@@ -27,7 +27,8 @@ var filesToCache = [
     '/javascripts/room.js',
     '/socket.io/socket.io.js',
     '/javascripts/canvas.js',
-    '/stylesheets/room.css',    
+    '/javascripts/knowledgegraph.js',
+    '/stylesheets/room.css',
 ];
 
 /**
@@ -55,6 +56,12 @@ self.addEventListener('fetch', function(event) {
         event.respondWith(fetch(event.request));
         return;
     }
+
+    if (event.request.url.indexOf('kgsearch.googleapis.com') == 0){
+        // Bypass knowledge graph queries
+        event.respondWith(fetch(event.request));
+        return;
+    }
     
     if (event.request.url.indexOf('socket.io/?') > -1){
         // Bypass socket io
@@ -63,7 +70,7 @@ self.addEventListener('fetch', function(event) {
     }
 
     if (event.request.url.indexOf('/img/meta') > -1 || event.request.url.indexOf('/img/search') > -1){
-        // Return join page
+        // Return image data
         event.respondWith(async function() {
             try {
                 response = await fetch(event.request);
