@@ -94,12 +94,15 @@ $(document).ready(async () => {
         updateInkColor();
         // initailize canvas
         initCanvas(onDrawing);
+        // initailize kg
+        initKg(kgItemSelected);
         
         $('#canvas-clear').on('click', function (e) {
             // clear canvas
             cls();
             // clear corresponding kg tags
             clearKgTags();
+            clearKgHistories(roomIdDb);
         });
 
         $('#pencilColor').on('click', function (e) {
@@ -113,7 +116,7 @@ $(document).ready(async () => {
 
     initChatHistory(roomIdDb);
     initDrawHistory(roomIdDb);
-    initKg(kgItemSelected);
+    initKgHistory(roomIdDb);
 });
 
 /**
@@ -156,6 +159,7 @@ function onDrawing(data){
 
     socket_kg.emit('post-kg', data);
     showKgTag(data)
+    storeKg(roomIdDb, data);
 }
 
 /**
@@ -175,6 +179,16 @@ async function initDrawHistory(roomIdDb) {
     let histories = await getDrawHistories(roomIdDb);
     for (let history of histories) {
         pushPath(history)
+    }
+}
+
+/**
+ * Init kg history from previous sessions
+ */
+ async function initKgHistory(roomIdDb) {
+    let histories = await getKgHistories(roomIdDb);
+    for (let history of histories) {
+        showKgTag(history)
     }
 }
 
@@ -295,6 +309,7 @@ function initDrawSocket() {
 
         // clear corresponding kg tags
         clearKgTags();
+        clearKgHistories(roomIdDb);
     });
 
     socket_draw.on('disconnect', function () {
@@ -324,6 +339,7 @@ function initDrawSocket() {
     socket_kg.on('recieve-kg', function (data, username) {
         // recieved a kg form others
         showKgTag(data)
+        storeKg(roomIdDb, data);
     });
 
     socket_kg.on('connect', function () {
