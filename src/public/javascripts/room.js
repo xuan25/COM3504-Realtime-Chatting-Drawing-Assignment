@@ -12,7 +12,7 @@ let isDrawOnline = false
 var imgId;
 var roomId;
 var roomIdDb = imgId+'_'+roomId;
-var color;
+
   
 /**
  * Get the room id
@@ -82,16 +82,16 @@ $(document).ready(async () => {
         socket_draw.emit('join', roomId, imgId, username);
 
         //get the color
-        clr();
+        updateInkColor();
         // initailize canvas
-        initCanvas(onDrawing, color);
+        initCanvas(onDrawing);
         
         $('#canvas-clear').on('click', function (e) {
             cls();
         });
 
         $('#pencilColor').on('click', function (e) {
-            clr();
+            updateInkColor();
         });
     }
     else{
@@ -115,12 +115,12 @@ function cls(){
 /**
  * Get the pencil color when selected
  */
-function clr(){
+function updateInkColor(){
     if (document.getElementById('color-red').checked == true) {c = 'red'}
     if (document.getElementById('color-blue').checked == true) {c = 'blue'}
     if (document.getElementById('color-yellow').checked == true) {c = 'yellow'}
     if (document.getElementById('color-green').checked == true) {c = 'green'}
-    color = c
+    inkColor = c
 }
 
 /**
@@ -128,7 +128,6 @@ function clr(){
  * emit paths when drawing
  */
 function onDrawing(data){
-    data.color = color;
     socket_draw.emit('post-path', data);
     storeDraw(roomIdDb, data);
     redrawPaths();
