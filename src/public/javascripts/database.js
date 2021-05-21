@@ -5,7 +5,6 @@ const JOIN_STORE_NAME = "store_join";
 const CHAT_HISTORY_STORE_NAME = "store_chat";
 const DRAW_HISTORY_STORE_NAME = "store_draw";
 const KG_HISTORY_STORE_NAME = "store_kg";
-// const PICS_HISTORY_STORE_NAME = "store_pic";
 
 
 // -------- init --------
@@ -52,7 +51,7 @@ async function initDatabase() {
             multiEntry: true,
           });
         }
-        //kg
+        //knowledge graph
         if (!upgradeDb.objectStoreNames.contains(KG_HISTORY_STORE_NAME)) {
           let drawHistoryDB = upgradeDb.createObjectStore(
             KG_HISTORY_STORE_NAME,
@@ -66,22 +65,6 @@ async function initDatabase() {
             multiEntry: true,
           });
         }
-        //pic
-        // if (!upgradeDb.objectStoreNames.contains(PICS_HISTORY_STORE_NAME)) {
-        //   let picsHistoryDB = upgradeDb.createObjectStore(
-        //     PICS_HISTORY_STORE_NAME,
-        //     {
-        //       keyPath: "id",
-        //       autoIncrement: true,
-        //     }
-        //   );
-        //   picsHistoryDB.createIndex("url", "url", {
-        //     unique: false,
-        //     multiEntry: true,
-        //   });
-        // }
-
-
       },
     });
   }
@@ -264,8 +247,7 @@ async function clearDrawHistories(roomId) {
 }
 
 
-// -------- kg -------------
-
+// -------- Knowledge Graph -------------
 async function storeKg(roomId, data) {
   if (!indexedDb) await initDatabase();
   if (indexedDb) {
@@ -321,46 +303,4 @@ async function clearKgHistories(roomId) {
     console.log("IndexDB not available");
   }
 }
-
-
-// -------- pic --------
-
-// async function storePics(url, roomId) {
-//   if (!db) await initDatabase();
-//   if (db) {
-//     try {
-//       let tx = await db.transaction(PICS_HISTORY_STORE_NAME, "readwrite");
-//       let store = await tx.objectStore(PICS_HISTORY_STORE_NAME);
-//       await store.put({
-//         roomId: roomId,
-//         url: url
-//       });
-//       await tx.complete;
-//     } catch (error) {
-//       console.log("IndexDB not available");
-//     }
-//   } else {
-//     console.log("IndexDB not available");
-//   }
-// }
-
-// async function getPics(url) {
-//   if (!db) await initDatabase();
-//   if (db) {
-//     try {
-//       console.log('fetching: ' + url);
-//       let tx = await imgdb.transaction(PICS_STORE_NAME, 'readonly');
-//       let store = await tx.objectStore(PICS_STORE_NAME);
-//       let index = await store.index('url');
-//       let pics = await index.getAll(IDBKeyRange.only(url));
-//       await tx.complete;
-//       return pics;
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   } else {
-//     console.log('IndexedDB not available');
-//   }
-// }
-
 
