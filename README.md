@@ -57,15 +57,15 @@ When you click on `Clear Canvas` button in the top right corner, the Drawing Can
 When you click the `Copy Share Link` button, the share link of the room will be placed in your clipboard. You can share this link with others, then they can join your room via this link.
 
 ## Screenshots
-![home](imgs\home.jpeg)
+![home](screenshots\home.jpeg)
 
-![home](imgs\upload.jpeg)
+![home](screenshots\upload.jpeg)
 
-![home](imgs\join.jpeg)
+![home](screenshots\join.jpeg)
 
-![home](imgs\guide.jpeg)
+![home](screenshots\guide.jpeg)
 
-![home](imgs\room.jpeg)
+![home](screenshots\room.jpeg)
 
 ## Roadmap/TODO
 
