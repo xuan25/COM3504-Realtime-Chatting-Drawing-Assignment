@@ -1,160 +1,160 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="Is-Template" content="<%- isTemplate %>">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="Is-Template" content="<%- isTemplate %>">
 
-    <title><%= title %></title>
+  <title><%= title %></title>
 
-    <!-- External -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+  <!-- External -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 
-    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.css">
-    <script type="text/javascript" src="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.js"></script>
-    <script src="/javascripts/knowledgegraph.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.css">
+  <script type="text/javascript" src="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.js"></script>
+  <script src="/javascripts/knowledgegraph.js"></script>
 
-    <script src="/javascripts/idb.js"></script>
+  <script src="/javascripts/idb.js"></script>
 
-    <script src="/socket.io/socket.io.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
 
-    <!-- Internal -->
-    <script src="/javascripts/database.js"></script>
-    <script src="/javascripts/canvas.js"></script>
-    <script src="/javascripts/room.js"></script>
-    
-    <link rel='stylesheet' href='/stylesheets/style.css'/>
-    <link rel='stylesheet' href='/stylesheets/room.css'/>
-    
-    <% if (!isTemplate) { %>
-        <%- "<script>" %>
-            <%- `var imgId = \'${imgId}\';` %>
-            <%- `var roomId = \'${roomId}\';` %>
-        <%- "</script>" %>
-    <% } %>
+  <!-- Internal -->
+  <script src="/javascripts/database.js"></script>
+  <script src="/javascripts/canvas.js"></script>
+  <script src="/javascripts/room.js"></script>
+  
+  <link rel='stylesheet' href='/stylesheets/style.css'/>
+  <link rel='stylesheet' href='/stylesheets/room.css'/>
+  
+  <% if (!isTemplate) { %>
+    <%- "<script>" %>
+      <%- `var imgId = \'${imgId}\';` %>
+      <%- `var roomId = \'${roomId}\';` %>
+    <%- "</script>" %>
+  <% } %>
 </head>
 <body>
 <div>
-    <!-- Info Header -->
+  <!-- Info Header -->
+  <div class="d-flex flex-row justify-content-between align-items-center" style="height: 5vh">
+    <div class="d-flex flex-row align-items-center mx-2">
+      <div>
+        Hi,
+        <span id="username"></span>
+        , you are in room: 
+        <span id="roomId"></span>
+      </div>
+    </div>
+    
+    <div class="d-flex flex-row align-items-center mx-2">
+      <!-- Ink colors -->
+      <div class="d-flex me-2" id="ink-color">
+        Ink color: 
+        <div class="ms-2">
+          <input class="form-check-input" type="radio" name="color-radio" id="color-red" checked>
+          <label class="form-check-label" for="color-radio-1">Red</label>
+        </div>
+        <div class="ms-2">
+          <input class="form-check-input" type="radio" name="color-radio" id="color-blue">
+          <label class="form-check-label" for="color-radio-2">Blue</label>
+        </div>
+        <div class="ms-2">
+          <input class="form-check-input" type="radio" name="color-radio" id="color-yellow">
+          <label class="form-check-label" for="color-radio-3">Yellow</label>
+        </div>
+        <div class="ms-2">
+          <input class="form-check-input" type="radio" name="color-radio" id="color-green">
+          <label class="form-check-label" for="color-radio-4">Green</label>
+        </div>
+      </div>
+      <button id="share-copy" type="button" class="btn btn-outline-success btn-sm ms-2">Copy share link</button>
+      <button id="canvas-clear" type="button" class="btn btn-outline-danger btn-sm ms-2">Clear canvas</button>
+    </div>
+  </div>
+  
+  <div class="row w-100 m-0" style="height: 50vh">
+    <!-- Image/Drawing area -->
+    <div class="col">
+      <div class="p-2 d-flex justify-content-center align-items-center" style="height: 50vh">
+        <img id="image" class="drawing-img" <%- isTemplate? '' : `src=\"/img/raw/${imgId}\"`%>>
+        <canvas id="canvas" class="drawing-canvas"></canvas>
+      </div>
+    </div>
+    <!-- Knowledge graph area -->
+    <div class="col-3 card overflow-auto" style="height: 50vh">
+      <div>
+        <div class="my-3">
+          <input type="text" class="form-control mb-1" id="kg-input" placeholder="Knowledge Graph Searching">
+          <input type="text" class="form-control" id="kg-type" placeholder="Type">
+        </div>
+        <div id="kg-tags" class="d-flex flex-column">
+          <!-- KG tags goes here -->
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+
+  <!-- Chat area -->
+  <div id="history" style="height: 35vh;" class="w-100 p-3 overflow-auto d-flex flex-column chat-bg">
+  
+  </div>
+
+  <!-- Input area -->
+  <div id="input" style="height: 5vh" class="w-100 p-3">
+    <form class="d-flex justify-content-center align-items-center" onsubmit="sendChatText(); return false;">
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="chat-input-addon">Chat:</span>
+        <input type="text" id="chat-input" name="chat-input" class="form-control" placeholder="Please input your chat message" aria-label="Please input your chat message" aria-describedby="chat-input-addon">
+        <button type="submit" id="chat-send" class="btn btn-primary">Send</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Guide  -->
+  <div id="guide-overlay" class="guide-overlay" style="display: none;">
     <div class="d-flex flex-row justify-content-between align-items-center" style="height: 5vh">
-        <div class="d-flex flex-row align-items-center mx-2">
-            <div>
-                Hi,
-                <span id="username"></span>
-                , you are in room: 
-                <span id="roomId"></span>
-            </div>
-        </div>
-        
-        <div class="d-flex flex-row align-items-center mx-2">
-            <!-- Ink colors -->
-            <div class="d-flex me-2" id="ink-color">
-                Ink color: 
-                <div class="ms-2">
-                    <input class="form-check-input" type="radio" name="color-radio" id="color-red" checked>
-                    <label class="form-check-label" for="color-radio-1">Red</label>
-                </div>
-                <div class="ms-2">
-                    <input class="form-check-input" type="radio" name="color-radio" id="color-blue">
-                    <label class="form-check-label" for="color-radio-2">Blue</label>
-                </div>
-                <div class="ms-2">
-                    <input class="form-check-input" type="radio" name="color-radio" id="color-yellow">
-                    <label class="form-check-label" for="color-radio-3">Yellow</label>
-                </div>
-                <div class="ms-2">
-                    <input class="form-check-input" type="radio" name="color-radio" id="color-green">
-                    <label class="form-check-label" for="color-radio-4">Green</label>
-                </div>
-            </div>
-            <button id="share-copy" type="button" class="btn btn-outline-success btn-sm ms-2">Copy share link</button>
-            <button id="canvas-clear" type="button" class="btn btn-outline-danger btn-sm ms-2">Clear canvas</button>
-        </div>
+      <div class="guide-item w-50 h-100 d-flex justify-content-center align-items-center">
+        <span>
+          <b>Room information: </b>
+          Here are some informations of your room
+        </span>
+      </div>
+      <div class="guide-item w-50 h-100 d-flex justify-content-center align-items-center">
+        <span>
+          <b>Tool Bar: </b>
+          You can change the ink color, share the room, or clear the canvas
+        </span>
+      </div>
     </div>
-    
     <div class="row w-100 m-0" style="height: 50vh">
-        <!-- Image/Drawing area -->
-        <div class="col">
-            <div class="p-2 d-flex justify-content-center align-items-center" style="height: 50vh">
-                <img id="image" class="drawing-img" <%- isTemplate? '' : `src=\"/img/raw/${imgId}\"`%>>
-                <canvas id="canvas" class="drawing-canvas"></canvas>
-            </div>
-        </div>
-        <!-- Knowledge graph area -->
-        <div class="col-3 card overflow-auto" style="height: 50vh">
-            <div>
-                <div class="my-3">
-                    <input type="text" class="form-control mb-1" id="kg-input" placeholder="Knowledge Graph Searching">
-                    <input type="text" class="form-control" id="kg-type" placeholder="Type">
-                </div>
-                <div id="kg-tags" class="d-flex flex-column">
-                    <!-- KG tags goes here -->
-                </div>
-            </div>
-        </div>
-        
+      <div class="col guide-item d-flex justify-content-center align-items-center">
+        <span>
+          <b>Drawing Canvas: </b>
+          <br/>
+          Here you can annotate on the picture together with others in the room
+        </span>
+      </div>
+      <div class="col-3 guide-item d-flex justify-content-center align-items-center" style="height: 50vh">
+        <span>
+          <b>Knowledge Graph Tags: </b>
+          <br/>
+          Here you can use knowledge graph to label the annotations in the canvas
+        </span>
+      </div>
     </div>
-    
-
-    <!-- Chat area -->
-    <div id="history" style="height: 35vh;" class="w-100 p-3 overflow-auto d-flex flex-column chat-bg">
-    
+    <div class="w-100 guide-item d-flex flex-row justify-content-center align-items-center" style="height: 45vh;">
+      <span>
+        <b>Chatting Area: </b>
+        <br/>
+        Here you can chat with other people in the room
+      </span>
     </div>
-
-    <!-- Input area -->
-    <div id="input" style="height: 5vh" class="w-100 p-3">
-        <form class="d-flex justify-content-center align-items-center" onsubmit="sendChatText(); return false;">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="chat-input-addon">Chat:</span>
-                <input type="text" id="chat-input" name="chat-input" class="form-control" placeholder="Please input your chat message" aria-label="Please input your chat message" aria-describedby="chat-input-addon">
-                <button type="submit" id="chat-send" class="btn btn-primary">Send</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- Guide  -->
-    <div id="guide-overlay" class="guide-overlay" style="display: none;">
-        <div class="d-flex flex-row justify-content-between align-items-center" style="height: 5vh">
-            <div class="guide-item w-50 h-100 d-flex justify-content-center align-items-center">
-                <span>
-                    <b>Room information: </b>
-                    Here are some informations of your room
-                </span>
-            </div>
-            <div class="guide-item w-50 h-100 d-flex justify-content-center align-items-center">
-                <span>
-                    <b>Tool Bar: </b>
-                    You can change the ink color, share the room, or clear the canvas
-                </span>
-            </div>
-        </div>
-        <div class="row w-100 m-0" style="height: 50vh">
-            <div class="col guide-item d-flex justify-content-center align-items-center">
-                <span>
-                    <b>Drawing Canvas: </b>
-                    <br/>
-                    Here you can annotate on the picture together with others in the room
-                </span>
-            </div>
-            <div class="col-3 guide-item d-flex justify-content-center align-items-center" style="height: 50vh">
-                <span>
-                    <b>Knowledge Graph Tags: </b>
-                    <br/>
-                    Here you can use knowledge graph to label the annotations in the canvas
-                </span>
-            </div>
-        </div>
-        <div class="w-100 guide-item d-flex flex-row justify-content-center align-items-center" style="height: 45vh;">
-            <span>
-                <b>Chatting Area: </b>
-                <br/>
-                Here you can chat with other people in the room
-            </span>
-        </div>
-        <button id="guide-btn" type="button" class="guide-btn btn btn-primary">Got it! Here we go!</button>
-    </div>
+    <button id="guide-btn" type="button" class="guide-btn btn btn-primary">Got it! Here we go!</button>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
