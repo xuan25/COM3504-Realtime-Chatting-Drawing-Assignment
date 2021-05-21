@@ -108,7 +108,7 @@ $(document).ready(async () => {
             clearKgHistories(roomIdDb);
         });
 
-        $('#pencilColor').on('click', function (e) {
+        $('#ink-color').on('click', function (e) {
             updateInkColor();
         });
     }
