@@ -19,12 +19,76 @@ var imgId;
 var roomId;
 var roomIdDb = imgId+'_'+roomId;
 
+
+
+// -------- Initialization --------
+
+/**
+ * Onload
+ */
+$(document).ready(async () => {
+  var isTemplate = document.getElementsByTagName('meta')['Is-Template'].content === "true"
+
+  // If it is a template, adjust the content of the template
+  if (isTemplate){
+    // Parse url
+    imgId = getImgId();
+    roomId = getRoomId();
+    if (imgId !== "offline"){
+      $('#image').attr("src", `/img/raw/${imgId}`)
+    }
+  }
+
+  var username = await getUsername();
+  if(username){
+    // UI
+    document.getElementById('username').innerHTML = username;
+    document.getElementById('roomId').innerHTML = roomId;
   
+    // initailize socket.io
+    initChatSocket();
+    socketChat.emit('join', roomId, imgId, username);
+    initDrawSocket();
+    socketDraw.emit('join', roomId, imgId, username);
+    initKgSocket();
+    socketKg.emit('join', roomId, imgId, username);
+
+    // initailize ink color
+    initInkColor()
+    // initailize canvas
+    initCanvas(onDrawing);
+    // initailize knowledge graph
+    try {
+      initKg(kgItemSelected);
+    } catch (error) {
+      console.error('Wnable to initailize knowledge graph')
+      console.error(error)
+    }
+    
+    // initailize clear canvas button
+    initClearButton()
+    // initailize copy share link button
+    initShareButton()
+
+    // initailize guide overlay
+    initGuide();
+
+    // initailize histories
+    initChatHistory(roomIdDb);
+    initDrawHistory(roomIdDb);
+    initKgHistory(roomIdDb);
+  }
+  else{
+    // Redirect to join page if username is not avaliable
+    window.location.href=`/join/${imgId}/?roomId=${roomId}`
+  }
+});
+
 /**
  * Get the room id
  * @returns room id
  */
- function getRoomId() {
+function getRoomId() {
   const result = window.location.pathname.split('/')[3]
   if ( result != null ){
     return decodeURI(result);
@@ -45,153 +109,6 @@ function getImgId() {
   }
   else{
     return null;
-  }
-}
-
-/**
- * Onload
- */
-$(document).ready(async () => {
-  var isTemplate = document.getElementsByTagName('meta')['Is-Template'].content === "true"
-
-  // If it is a template, adjust the content of the template
-  if (isTemplate){
-    // Parse url
-    imgId = getImgId();
-    roomId = getRoomId();
-    if (imgId !== "offline"){
-      $('#image').attr("src", `/img/raw/${imgId}`)
-    }
-  }
-
-  // share button clicked. copy the link to the clipboard
-  $('#share-copy').click(() => {
-    var aux = document.createElement("input"); 
-    aux.setAttribute("value", window.location.href); 
-    document.body.appendChild(aux); 
-    aux.select();
-    document.execCommand("copy"); 
-    document.body.removeChild(aux);
-
-    alert("The share link has been copied to your clipboard.");
-  });
-
- 
-  var username = await getUsername();
-  if(username){
-    // UI
-    document.getElementById('username').innerHTML = username;
-    document.getElementById('roomId').innerHTML = roomId;
-  
-    // initailize socket.io
-    initChatSocket();
-    socketChat.emit('join', roomId, imgId, username);
-  
-    initDrawSocket();
-    socketDraw.emit('join', roomId, imgId, username);
-
-    initKgSocket();
-    socketKg.emit('join', roomId, imgId, username);
-
-    //get the color
-    updateInkColor();
-    // initailize canvas
-    initCanvas(onDrawing);
-    // initailize kg
-    initKg(kgItemSelected);
-    
-    $('#canvas-clear').on('click', function (e) {
-      // clear canvas
-      cls();
-      // clear corresponding kg tags
-      clearKgTags();
-      clearKgHistories(roomIdDb);
-    });
-
-    $('#ink-color').on('click', function (e) {
-      updateInkColor();
-    });
-  }
-  else{
-    // Redirect to join page if username is not avaliable
-    window.location.href=`/join/${imgId}/?roomId=${roomId}`
-  }
-
-  initGuide();
-  initChatHistory(roomIdDb);
-  initDrawHistory(roomIdDb);
-  initKgHistory(roomIdDb);
-});
-
-/**
- * Clear local canvas and boardcast a cls event
- */
-function cls(){
-  clearPaths();
-  clearDrawHistories(roomIdDb);
-  socketDraw.emit('cls');
-}
-
-/**
- * Get the pencil color when selected
- */
-function updateInkColor(){
-  if (document.getElementById('color-red').checked == true) {c = 'red'}
-  if (document.getElementById('color-blue').checked == true) {c = 'blue'}
-  if (document.getElementById('color-yellow').checked == true) {c = 'yellow'}
-  if (document.getElementById('color-green').checked == true) {c = 'green'}
-  inkColor = c
-}
-
-/**
- * onDrawing callback
- * emit paths when drawing
- */
-function onDrawing(data){
-  socketDraw.emit('post-path', data);
-  storeDraw(roomIdDb, data);
-}
-
-/**
- * callback called when an element in the widget is selected
- * @param event the Google Graph widget event {@link https://developers.google.com/knowledge-graph/how-tos/search-widget}
- */
- function kgItemSelected(event){
-  let row = event.row;
-  data = {color: inkColor, kg: row}
-
-  socketKg.emit('post-kg', data);
-  showKgTag(data)
-  storeKg(roomIdDb, data);
-}
-
-/**
- * Init chat history from previous sessions
- */
-async function initChatHistory(roomIdDb) {
-  let histories = await getChatHistories(roomIdDb);
-  for (let history of histories) {
-    writeOnChatHistory(history.msgId, history.username, history.message, history.isMe, history.isSend);
-  }
-}
-
-/**
- * Init draw history from previous sessions
- */
-async function initDrawHistory(roomIdDb) {
-  let histories = await getDrawHistories(roomIdDb);
-  for (let history of histories) {
-    pushPath(history)
-  }
-}
-
-/**
- * Init kg history from previous sessions
- */
- async function initKgHistory(roomIdDb) {
-  let histories = await getKgHistories(roomIdDb);
-  for (let history of histories) {
-    showKgTag(history)
   }
 }
 
@@ -326,7 +243,7 @@ function initDrawSocket() {
 /**
  * Initialises the socket for /kg
  */
- function initKgSocket() {
+function initKgSocket() {
   socketKg.on('joined', async function () {
     isKgOnline = true
     // joined a room
@@ -362,6 +279,96 @@ function initDrawSocket() {
 }
 
 /**
+ * Init ink color
+ */
+function initInkColor() {
+  // get initial color
+  updateInkColor();
+
+  // color update
+  $('#ink-color').on('click', function (e) {
+    updateInkColor();
+  });
+}
+
+/**
+ * Init clear canvas button
+ */
+function initClearButton() {
+  $('#canvas-clear').on('click', function (e) {
+    // clear canvas
+    cls();
+    // clear corresponding kg tags
+    clearKgTags();
+    clearKgHistories(roomIdDb);
+  });
+}
+
+/**
+ * Init copy share link button
+ */
+function initShareButton() {
+  // share button clicked. copy the link to the clipboard
+  $('#share-copy').click(() => {
+    var aux = document.createElement("input"); 
+    aux.setAttribute("value", window.location.href); 
+    document.body.appendChild(aux); 
+    aux.select();
+    document.execCommand("copy"); 
+    document.body.removeChild(aux);
+
+    alert("The share link has been copied to your clipboard.");
+  });
+}
+
+/**
+ * Init guide. Show guide for the first time
+ */
+async function initGuide(){
+  if (!await isGuideSet()){
+    $("#guide-overlay").show()
+    $("#guide-btn").click(() => {
+      $("#guide-overlay").hide()
+      setGuide()
+    })
+  }
+}
+
+/**
+ * Init chat history from previous sessions
+ */
+async function initChatHistory(roomIdDb) {
+  let histories = await getChatHistories(roomIdDb);
+  for (let history of histories) {
+    writeOnChatHistory(history.msgId, history.username, history.message, history.isMe, history.isSend);
+  }
+}
+
+/**
+ * Init draw history from previous sessions
+ */
+async function initDrawHistory(roomIdDb) {
+  let histories = await getDrawHistories(roomIdDb);
+  for (let history of histories) {
+    pushPath(history)
+  }
+}
+
+/**
+ * Init kg history from previous sessions
+ */
+async function initKgHistory(roomIdDb) {
+  let histories = await getKgHistories(roomIdDb);
+  for (let history of histories) {
+    showKgTag(history)
+  }
+}
+
+
+
+// -------- Chatting functions --------
+
+/**
  * called when the Send button is pressed. It gets the text to send from the interface
  * and sends the message via socket.io
  */
@@ -390,7 +397,6 @@ async function sendChatText() {
   return false
 }
 
-
 /**
  * Show a message
  * @param msgId: message id
@@ -398,7 +404,7 @@ async function sendChatText() {
  * @param message: message
  * @param isMe: my message or from others
  */
- function writeOnChatHistory(msgId, username, message, isMe, isSent) {
+function writeOnChatHistory(msgId, username, message, isMe, isSent) {
   if (isMe){
     if (isSent){
       $('#history').append(
@@ -461,6 +467,7 @@ async function sendChatText() {
   let history = document.getElementById('history');
   history.scrollTop = history.scrollHeight;
 }
+
 /**
  * Show a infomation/notice
  * @param message notice message
@@ -480,16 +487,53 @@ function writeInfo(message){
   let history = document.getElementById('history');
   history.scrollTop = history.scrollHeight;
 }
- 
+
+
+
+// -------- Drawing functions --------
+
 /**
- * Init guide. Show guide for the first time
+ * Get the pencil color when selected
  */
-async function initGuide(){
-  if (!await isGuideSet()){
-    $("#guide-overlay").show()
-    $("#guide-btn").click(() => {
-      $("#guide-overlay").hide()
-      setGuide()
-    })
-  }
+ function updateInkColor(){
+  if (document.getElementById('color-red').checked == true) {c = 'red'}
+  if (document.getElementById('color-blue').checked == true) {c = 'blue'}
+  if (document.getElementById('color-yellow').checked == true) {c = 'yellow'}
+  if (document.getElementById('color-green').checked == true) {c = 'green'}
+  inkColor = c
+}
+
+/**
+ * onDrawing callback
+ * emit paths when drawing
+ */
+ function onDrawing(data){
+  socketDraw.emit('post-path', data);
+  storeDraw(roomIdDb, data);
+}
+
+/**
+ * Clear local canvas and boardcast a cls event
+ */
+function cls(){
+  clearPaths();
+  clearDrawHistories(roomIdDb);
+  socketDraw.emit('cls');
+}
+
+
+
+// -------- Knowledge Graph functions --------
+
+/**
+ * callback called when an element in the widget is selected
+ * @param event the Google Graph widget event {@link https://developers.google.com/knowledge-graph/how-tos/search-widget}
+ */
+function kgItemSelected(event){
+  let row = event.row;
+  data = {color: inkColor, kg: row}
+
+  socketKg.emit('post-kg', data);
+  showKgTag(data)
+  storeKg(roomIdDb, data);
 }
