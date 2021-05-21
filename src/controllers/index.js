@@ -1,4 +1,3 @@
-
 const Image = require('../models/images');
 const path = require('path');
 
@@ -29,7 +28,6 @@ exports.getIndex = function (req, res) {
         res.status(500).send('error ' + e);
     }
 }
-
 
 // search ajax api
 exports.searchAuthor = function (req, res) {

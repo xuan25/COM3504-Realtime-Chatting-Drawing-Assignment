@@ -298,7 +298,7 @@
       }
   }
 },
-    "/join": {
+    "/join/": {
       "get": {
           "description": " get join page for a image",
           "parameters": [

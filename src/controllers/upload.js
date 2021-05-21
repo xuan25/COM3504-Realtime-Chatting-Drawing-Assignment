@@ -1,4 +1,3 @@
-
 const Image = require('../models/images');
 const fetch = require('node-fetch');
 
@@ -6,7 +5,6 @@ const fetch = require('node-fetch');
 exports.getIndex = function (req, res){
     res.render('upload', { title: "Upload" });
 }
-
 
 // wrap model.save to an async function
 function saveModelAsync (model) {
