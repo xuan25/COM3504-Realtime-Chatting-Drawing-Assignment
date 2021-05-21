@@ -3,9 +3,8 @@
 <head>
     <title><%= title %></title>
 
-    <script>
-        var isTemplate = <%- isTemplate %>;
-    </script>
+    <meta name="Is-Template" content="<%- isTemplate %>">
+
     <% if (!isTemplate) { %>
         <%- "<script>" %>
             <%- `var imgId = \'${imgId}\';` %>

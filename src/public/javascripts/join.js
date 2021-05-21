@@ -40,6 +40,7 @@ function getImgId() {
  * Onload
  */
 $(document).ready(async () => {
+  var isTemplate = document.getElementsByTagName('meta')['Is-Template'].content === "true"
 
   // If it is a template, adjust the content of the template
   if (isTemplate){
@@ -49,7 +50,9 @@ $(document).ready(async () => {
     // Change content
     $('#imgId').val(imgId)
     $('#roomId').val(roomId)
-    $('#bg-image').css("background-image", `url(/img/raw/${imgId})`)
+    if (imgId !== "offline"){
+      $('#bg-image').css("background-image", `url(/img/raw/${imgId})`)
+    }
   }
 
   // join button clicked

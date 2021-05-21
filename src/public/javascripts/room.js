@@ -52,13 +52,16 @@ function getImgId() {
  * Onload
  */
 $(document).ready(async () => {
+    var isTemplate = document.getElementsByTagName('meta')['Is-Template'].content === "true"
 
     // If it is a template, adjust the content of the template
     if (isTemplate){
         // Parse url
         imgId = getImgId();
         roomId = getRoomId();
-        $('#image').attr("src", `/img/raw/${imgId}`)
+        if (imgId !== "offline"){
+            $('#image').attr("src", `/img/raw/${imgId}`)
+        }
     }
 
     // share button clicked. copy the link to the clipboard
