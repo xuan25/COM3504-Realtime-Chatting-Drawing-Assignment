@@ -7,7 +7,7 @@
 3. Make sure your mongoDB service is running on port `27017`
 4. Make sure the database `com3504` is empty
 5. Run `npm start` to start up the server
-6. Browse [https://localhost:3000](https://localhost:3000)
+6. Browse [http://localhost:3000](http://localhost:3000)
 
 ## How to use
 
