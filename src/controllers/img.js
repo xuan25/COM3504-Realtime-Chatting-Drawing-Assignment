@@ -14,9 +14,9 @@ exports.getAll = function (req, res) {
                 }
                 
                 // read results
-                res_list = []
+                resList = []
                 for (img of imgs){
-                    res_list.push({ 
+                    resList.push({ 
                         id: img._id, 
                         title: img.title,
                         author: img.author,
@@ -27,7 +27,7 @@ exports.getAll = function (req, res) {
 
                 // response
                 res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify({ code: 0, data: { list: res_list } }));
+                res.send(JSON.stringify({ code: 0, data: { list: resList } }));
             });
     } catch (e) {
         res.status(500).send('error ' + e);
@@ -82,9 +82,9 @@ exports.getAllMeta = function (req, res) {
                 }
                 
                 // read results
-                res_list = []
+                resList = []
                 for (img of imgs){
-                    res_list.push({ 
+                    resList.push({ 
                         id: img._id, 
                         title: img.title,
                         author: img.author,
@@ -94,7 +94,7 @@ exports.getAllMeta = function (req, res) {
 
                 // response
                 res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify({ code: 0, data: { list: res_list } }));
+                res.send(JSON.stringify({ code: 0, data: { list: resList } }));
             });
     } catch (e) {
         res.status(500).send('error ' + e);

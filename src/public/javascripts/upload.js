@@ -5,8 +5,8 @@ var localMediaStream = null;
 var videoStreamInited = false;
 
 // store the image data
-let img_data_local_base64 = null;
-let img_data_camera_base64 = null;
+let imgDataLocalBase64 = null;
+let imgDataCameraBase64 = null;
 
 
 /**
@@ -112,7 +112,7 @@ function initSnapshot(){
 			
       ctx.drawImage(video, 0, 0);  
       // console.log(canvas.toDataURL('image/png'))
-      img_data_camera_base64 = canvas.toDataURL('image/png');
+      imgDataCameraBase64 = canvas.toDataURL('image/png');
     }
   });
 }
@@ -137,7 +137,7 @@ function initFileLoader() {
       // get the file
       let reader = new FileReader();
       reader.onload = function(e) {
-        img_data_local_base64 = e.target.result;
+        imgDataLocalBase64 = e.target.result;
       };
       // read the file by dataURL(Base64)
       reader.readAsDataURL(file);
@@ -160,11 +160,11 @@ function upload() {
   }
   else if (sel === "2") {
     // from local file
-    uploadByData(img_data_local_base64, title, author, description)
+    uploadByData(imgDataLocalBase64, title, author, description)
   }
   else {
     // from camera
-    uploadByData(img_data_camera_base64, title, author, description)
+    uploadByData(imgDataCameraBase64, title, author, description)
   }
 }
 

@@ -25,7 +25,7 @@ exports.upload = async function (req, res) {
         res.status(403).send('No data sent!')
     }
     try {
-        img_data = null;
+        imgData = null;
 
         // upload types
         if (data.imgType === 'http'){
@@ -37,11 +37,11 @@ exports.upload = async function (req, res) {
             buf = await img_res.buffer();
             contentType = img_res.headers.get("content-type");
             base64 = await buf.toString('base64');
-            img_data = `data:${contentType};base64,` + base64;
+            imgData = `data:${contentType};base64,` + base64;
         }
         else if (data.imgType === 'data'){
             // no more actions
-            img_data = data.img
+            imgData = data.img
         }
         else {
             res.status(500).send('Invalid data!');
@@ -52,7 +52,7 @@ exports.upload = async function (req, res) {
             title: data.title,
             author: data.author,
             desc: data.desc,
-            data: img_data
+            data: imgData
         });
 
         // save model

@@ -1,7 +1,7 @@
 // socket.io
-let socket_chat = io.connect('/chat');
-let socket_draw = io.connect('/draw');
-let socket_kg = io.connect('/kg');
+let socketChat = io.connect('/chat');
+let socketDraw = io.connect('/draw');
+let socketKg = io.connect('/kg');
 
 // Chatting socket.io status
 let isChatJoined = false
@@ -82,13 +82,13 @@ $(document).ready(async () => {
     
         // initailize socket.io
         initChatSocket();
-        socket_chat.emit('join', roomId, imgId, username);
+        socketChat.emit('join', roomId, imgId, username);
     
         initDrawSocket();
-        socket_draw.emit('join', roomId, imgId, username);
+        socketDraw.emit('join', roomId, imgId, username);
 
         initKgSocket();
-        socket_kg.emit('join', roomId, imgId, username);
+        socketKg.emit('join', roomId, imgId, username);
 
         //get the color
         updateInkColor();
@@ -125,7 +125,7 @@ $(document).ready(async () => {
 function cls(){
     clearPaths();
     clearDrawHistories(roomIdDb);
-    socket_draw.emit('cls');
+    socketDraw.emit('cls');
 }
 
 /**
@@ -144,7 +144,7 @@ function updateInkColor(){
  * emit paths when drawing
  */
 function onDrawing(data){
-    socket_draw.emit('post-path', data);
+    socketDraw.emit('post-path', data);
     storeDraw(roomIdDb, data);
 }
 
@@ -156,7 +156,7 @@ function onDrawing(data){
     let row = event.row;
     data = {color: inkColor, kg: row}
 
-    socket_kg.emit('post-kg', data);
+    socketKg.emit('post-kg', data);
     showKgTag(data)
     storeKg(roomIdDb, data);
 }
@@ -195,7 +195,7 @@ async function initDrawHistory(roomIdDb) {
  * Initialises the socket for /chat
  */
 function initChatSocket() {
-    socket_chat.on('joined', async function () {
+    socketChat.on('joined', async function () {
         isChatOnline = true
         // joined a room
         if (!isChatJoined){
@@ -205,53 +205,53 @@ function initChatSocket() {
             writeInfo('<b>Rejoined the room.</b>');
         }
 
-        // Post all unsent messages if the connection is back
+        // Post all unsent messages if the connection is back (Feature removed)
         // If the server is disconnected, wait for all users to reconnect.
         // setTimeout(function(){
-        //     for (var msg_id in unsent_msgs) {
-        //         let message = unsent_msgs[msg_id];
+        //     for (var msgId in unsent_msgs) {
+        //         let message = unsent_msgs[msgId];
         //         if(message){
-        //             socket_chat.emit('post-chat', msg_id, message);
+        //             socket_chat.emit('post-chat', msgId, message);
         //         }
         //     }
         // }, 1000);
     });
-    socket_chat.on('new-member', function (userId) {
+    socketChat.on('new-member', function (userId) {
         // notifies that someone has joined the room
         writeInfo('<b>' + userId + '</b>' + ' has joined the room');
     });
-    socket_chat.on('member-left', function (userId) {
+    socketChat.on('member-left', function (userId) {
         // notifies that someone has left the room
         writeInfo('<b>' + userId + '</b>' + ' has left the room');
     });
-    socket_chat.on('posted-chat', async function (msg_id) {
+    socketChat.on('posted-chat', async function (msgId) {
         // message post succeed
 
         // remove from unsents
-        msg = await getChatHistoryByMsgId(msg_id)
-        await deleteChatHistoryByMsgId(msg_id)
+        msg = await getChatHistoryByMsgId(msgId)
+        await deleteChatHistoryByMsgId(msgId)
 
         // display
-        let historyEle = document.getElementById(msg_id);
+        let historyEle = document.getElementById(msgId);
         historyEle.parentNode.removeChild(historyEle);
-        writeOnChatHistory(msg_id, 'Me', msg.message, true, true);
+        writeOnChatHistory(msgId, 'Me', msg.message, true, true);
 
         await storeChatHistory(msg.roomId, msg.username, msg.msgId, msg.message, msg.isMe, true);
 
     });
-    socket_chat.on('recieve-chat', async function (username, msg_id, message) {
+    socketChat.on('recieve-chat', async function (username, msgId, message) {
         // a message is received
-        writeOnChatHistory(msg_id, username, message, false, true);
-        await storeChatHistory(roomIdDb, username, msg_id, message, false, true);
+        writeOnChatHistory(msgId, username, message, false, true);
+        await storeChatHistory(roomIdDb, username, msgId, message, false, true);
     });
-    socket_chat.on('connect', function () {
+    socketChat.on('connect', function () {
         if(isChatJoined){
             // Auto rejoin the room if the connection has back
             writeInfo('<b>Reconnected to the server.</b>');
-            socket_chat.emit('join', roomId, imgId, username);
+            socketChat.emit('join', roomId, imgId, username);
         }
     });
-    socket_chat.on('disconnect', function () {
+    socketChat.on('disconnect', function () {
         if(isChatJoined){
             // connection has lost due to some network issue
             isChatOnline = false
@@ -264,7 +264,7 @@ function initChatSocket() {
  * Initialises the socket for /draw
  */
 function initDrawSocket() {
-    socket_draw.on('joined', async function () {
+    socketDraw.on('joined', async function () {
         isDrawOnline = true
         // joined a room
         if (!isDrawJoined){
@@ -277,30 +277,30 @@ function initDrawSocket() {
         // Post all unsent drawings (reserved)
         // If the server is disconnected, wait for all users to reconnect.
         // setTimeout(function(){
-        //     for (var msg_id in unsent_msgs) {
-        //         let message = unsent_msgs[msg_id];
+        //     for (var msgId in unsent_msgs) {
+        //         let message = unsent_msgs[msgId];
         //         if(message){
-        //             socket_draw.emit('post-chat', msg_id, message);
+        //             socket_draw.emit('post-chat', msgId, message);
         //         }
         //     }
         // }, 1000);
     });
     
-    socket_draw.on('recieve-path', function (data, username) {
+    socketDraw.on('recieve-path', function (data, username) {
         // recieved a path form others
         pushPath(data)
         storeDraw(roomIdDb, data)
     });
 
-    socket_draw.on('connect', function () {
+    socketDraw.on('connect', function () {
         if(isDrawJoined){
             // Auto rejoin the room if the connection has back
             writeInfo('<b>Reconnected to the server. (drawing)</b>');
-            socket_draw.emit('join', roomId, imgId, username);
+            socketDraw.emit('join', roomId, imgId, username);
         }
     });
     
-    socket_draw.on('cls', function () {
+    socketDraw.on('cls', function () {
         // clear canvas event
         clearPaths();
         clearDrawHistories(roomIdDb);
@@ -310,7 +310,7 @@ function initDrawSocket() {
         clearKgHistories(roomIdDb);
     });
 
-    socket_draw.on('disconnect', function () {
+    socketDraw.on('disconnect', function () {
         if(isDrawJoined){
             // connection has lost due to some network issue
             isDrawOnline = false
@@ -323,7 +323,7 @@ function initDrawSocket() {
  * Initialises the socket for /kg
  */
  function initKgSocket() {
-    socket_kg.on('joined', async function () {
+    socketKg.on('joined', async function () {
         isKgOnline = true
         // joined a room
         if (!isKgJoined){
@@ -334,21 +334,21 @@ function initDrawSocket() {
         }
     });
     
-    socket_kg.on('recieve-kg', function (data, username) {
+    socketKg.on('recieve-kg', function (data, username) {
         // recieved a kg form others
         showKgTag(data)
         storeKg(roomIdDb, data);
     });
 
-    socket_kg.on('connect', function () {
+    socketKg.on('connect', function () {
         if(isKgJoined){
             // Auto rejoin the room if the connection has back
             writeInfo('<b>Reconnected to the server. (kg)</b>');
-            socket_kg.emit('join', roomId, imgId, username);
+            socketKg.emit('join', roomId, imgId, username);
         }
     });
 
-    socket_kg.on('disconnect', function () {
+    socketKg.on('disconnect', function () {
         if(isDrawJoined){
             // connection has lost due to some network issue
             isDrawOnline = false
@@ -369,19 +369,19 @@ async function sendChatText() {
         return;
     }
 
-    let msg_id = 'msg_' + Math.round(Math.random() * (2 ** 53))
+    let msgId = 'msg_' + Math.round(Math.random() * (2 ** 53))
 
     // Store to unsent_msgs
-    storeChatHistory(roomIdDb, 'Me', msg_id, message, true, false)
+    storeChatHistory(roomIdDb, 'Me', msgId, message, true, false)
 
     // emit chat message if the connection is on
     if(isChatOnline){
-        socket_chat.emit('post-chat', msg_id, message);
+        socketChat.emit('post-chat', msgId, message);
     }
     
     // Clear input and show an unsent message
     document.getElementById('chat-input').value = '';
-    writeOnChatHistory(msg_id, 'Me', message, true, false);
+    writeOnChatHistory(msgId, 'Me', message, true, false);
 
     return false
 }

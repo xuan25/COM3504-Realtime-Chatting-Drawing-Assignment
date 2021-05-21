@@ -1,4 +1,4 @@
-.backgroundImage {
+.bg-image {
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -10,7 +10,7 @@
     position: absolute;
 }
 
-.bingImageOverlay {
+.bg-overlay {
     top: 0px;
     background-position-y: 0%;
     background-repeat: no-repeat;

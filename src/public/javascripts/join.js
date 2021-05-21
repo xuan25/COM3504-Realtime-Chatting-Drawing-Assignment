@@ -6,7 +6,7 @@
 function getQueryVariable(name) {
   const reg = new RegExp("(^|&)" + name+ "=([^&]*)(&|$)", "i");
   const result = window.location.search.substr(1).match(reg);
-  if ( result != null ){
+  if (result != null){
      return decodeURI(result[2]);
   }
   else{
@@ -49,7 +49,7 @@ $(document).ready(async () => {
     // Change content
     $('#imgId').val(imgId)
     $('#roomId').val(roomId)
-    $('#backgroundImage').css("background-image", `url(/img/raw/${imgId})`)
+    $('#bg-image').css("background-image", `url(/img/raw/${imgId})`)
   }
 
   // join button clicked

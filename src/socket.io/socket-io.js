@@ -36,7 +36,7 @@ exports.init = function (io) {
              * emit meg_id to the serder via "post-chat" indicates that the server received the msg
              * broadcast to others via "recieve-chat"
              */
-            socket.on("post-chat", function (msg_id, message) {
+            socket.on("post-chat", function (msgId, message) {
                 // socket validation
                 socket_info = socket_info_dict[socket.id];
                 if (!socket_info) {
@@ -48,10 +48,10 @@ exports.init = function (io) {
                 username = socket_info["username"];
 
                 // server received confirmation
-                socket.emit("posted-chat", msg_id);
+                socket.emit("posted-chat", msgId);
 
                 // broadcast to others
-                socket.broadcast.to(socket_room).emit("recieve-chat", username, msg_id, message);
+                socket.broadcast.to(socket_room).emit("recieve-chat", username, msgId, message);
             });
 
             /**

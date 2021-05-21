@@ -40,12 +40,12 @@ function redrawPaths(){
 function clearPaths(){
     pathBuffer = []
 
-    let canvas_jq = $('#canvas');
+    let canvasJq = $('#canvas');
     let canvas = document.getElementById('canvas');
     let ctx = canvas.getContext('2d');
     
-    let c_width = canvas_jq.width();
-    let c_height = canvas_jq.height();
+    let c_width = canvasJq.width();
+    let c_height = canvasJq.height();
     ctx.clearRect(0, 0, c_width, c_height);
 }
 
