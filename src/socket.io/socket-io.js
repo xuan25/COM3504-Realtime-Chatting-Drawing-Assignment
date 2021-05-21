@@ -3,7 +3,7 @@ exports.init = function (io) {
      * Chatting socket info dictionary
      * for retriving user infos by socket id
      */
-    const socket_info_dict = {};
+    const socketChatInfoDict = {};
 
     /**
      * Chatting namespace
@@ -13,22 +13,22 @@ exports.init = function (io) {
             /**
              * "join" when user create or join a room
              */
-            socket.on("join", function (room, image_uri, username) {
+            socket.on("join", function (room, imageUri, username) {
                 // generate a socket room identifier
-                socket_room = room + " @ " + image_uri;
+                socketRoom = room + " @ " + imageUri;
 
                 // store user info
-                socket_info_dict[socket.id] = {
-                    socket_room: socket_room,
+                socketChatInfoDict[socket.id] = {
+                    socketRoom: socketRoom,
                     username: username,
                 };
 
                 // let user join
-                socket.join(socket_room);
+                socket.join(socketRoom);
                 socket.emit("joined");
 
                 // inform others
-                socket.broadcast.to(socket_room).emit("new-member", username);
+                socket.broadcast.to(socketRoom).emit("new-member", username);
             });
 
             /**
@@ -38,20 +38,20 @@ exports.init = function (io) {
              */
             socket.on("post-chat", function (msgId, message) {
                 // socket validation
-                socket_info = socket_info_dict[socket.id];
+                socket_info = socketChatInfoDict[socket.id];
                 if (!socket_info) {
                     return;
                 }
 
                 // retrive user info
-                socket_room = socket_info["socket_room"];
+                socketRoom = socket_info["socketRoom"];
                 username = socket_info["username"];
 
                 // server received confirmation
                 socket.emit("posted-chat", msgId);
 
                 // broadcast to others
-                socket.broadcast.to(socket_room).emit("recieve-chat", username, msgId, message);
+                socket.broadcast.to(socketRoom).emit("recieve-chat", username, msgId, message);
             });
 
             /**
@@ -60,29 +60,30 @@ exports.init = function (io) {
              */
             socket.on("disconnect", function () {
                 // socket validation
-                socket_info = socket_info_dict[socket.id];
+                socket_info = socketChatInfoDict[socket.id];
                 if (!socket_info) {
                     return;
                 }
 
                 // retrive user info
-                socket_room = socket_info["socket_room"];
+                socketRoom = socket_info["socketRoom"];
                 username = socket_info["username"];
 
                 // delete user info
-                delete socket_info_dict[socket.id];
+                delete socketChatInfoDict[socket.id];
 
                 // broadcast to others
-                socket.broadcast.to(socket_room).emit("member-left", username);
+                socket.broadcast.to(socketRoom).emit("member-left", username);
             });
         } catch (e) { }
     });
+
 
     /**
      * Drawing socket info dictionary
      * for retriving user infos by socket id
      */
-    const socket_draw_info_dict = {};
+    const socketDrawInfoDict = {};
 
     /**
      * Drawing namespace
@@ -92,22 +93,19 @@ exports.init = function (io) {
             /**
              * "join" when user create or join a room
              */
-            socket.on("join", function (room, image_uri, username) {
+            socket.on("join", function (room, imageUri, username) {
                 // generate a socket room identifier
-                socket_room = room + " @ " + image_uri;
+                socketRoom = room + " @ " + imageUri;
 
                 // store user info
-                socket_draw_info_dict[socket.id] = {
-                    socket_room: socket_room,
+                socketDrawInfoDict[socket.id] = {
+                    socketRoom: socketRoom,
                     username: username,
                 };
 
                 // let user join
-                socket.join(socket_room);
+                socket.join(socketRoom);
                 socket.emit("joined");
-
-                // inform others (reserved)
-                // socket.broadcast.to(socket_room).emit('new-member', username);
             });
 
             /**
@@ -116,20 +114,17 @@ exports.init = function (io) {
              */
             socket.on("post-path", function (data) {
                 // socket validation
-                socket_info = socket_draw_info_dict[socket.id];
+                socket_info = socketDrawInfoDict[socket.id];
                 if (!socket_info) {
                     return;
                 }
 
                 // retrive user info
-                socket_room = socket_info["socket_room"];
+                socketRoom = socket_info["socketRoom"];
                 username = socket_info["username"];
 
-                // server received confirmation (reserved)
-                // socket.emit('posted-path', path_id);
-
                 // broadcast to others
-                socket.broadcast.to(socket_room).emit("recieve-path", data, username);
+                socket.broadcast.to(socketRoom).emit("recieve-path", data, username);
             });
 
             /**
@@ -138,17 +133,17 @@ exports.init = function (io) {
              */
             socket.on("cls", function () {
                 // socket validation
-                socket_info = socket_draw_info_dict[socket.id];
+                socket_info = socketDrawInfoDict[socket.id];
                 if (!socket_info) {
                     return;
                 }
 
                 // retrive user info
-                socket_room = socket_info["socket_room"];
+                socketRoom = socket_info["socketRoom"];
                 username = socket_info["username"];
 
                 // broadcast to others
-                socket.broadcast.to(socket_room).emit("cls");
+                socket.broadcast.to(socketRoom).emit("cls");
             });
 
             /**
@@ -156,29 +151,23 @@ exports.init = function (io) {
              */
             socket.on("disconnect", function () {
                 // socket validation
-                socket_info = socket_draw_info_dict[socket.id];
+                socket_info = socketDrawInfoDict[socket.id];
                 if (!socket_info) {
                     return;
                 }
 
-                // retrive user info (reserved)
-                // socket_room = socket_info["socket_room"]
-                // username = socket_info["username"]
-
                 // delete user info
-                delete socket_draw_info_dict[socket.id];
-
-                // broadcast to others (reserved)
-                // socket.broadcast.to(socket_room).emit('member-left', username);
+                delete socketDrawInfoDict[socket.id];
             });
         } catch (e) { }
     });
 
+    
     /**
      * Knowledge Graph socket info dictionary
      * for retriving user infos by socket id
      */
-     const socket_kg_info_dict = {};
+     const socketKgInfoDict = {};
 
     /**
      * Knowledge Graph namespace
@@ -188,18 +177,18 @@ exports.init = function (io) {
             /**
              * "join" when user create or join a room
              */
-            socket.on("join", function (room, image_uri, username) {
+            socket.on("join", function (room, imageUri, username) {
                 // generate a socket room identifier
-                socket_room = room + " @ " + image_uri;
+                socketRoom = room + " @ " + imageUri;
 
                 // store user info
-                socket_kg_info_dict[socket.id] = {
-                    socket_room: socket_room,
+                socketKgInfoDict[socket.id] = {
+                    socketRoom: socketRoom,
                     username: username,
                 };
 
                 // let user join
-                socket.join(socket_room);
+                socket.join(socketRoom);
                 socket.emit("joined");
             });
 
@@ -209,17 +198,17 @@ exports.init = function (io) {
              */
             socket.on("post-kg", function (data) {
                 // socket validation
-                socket_info = socket_kg_info_dict[socket.id];
+                socket_info = socketKgInfoDict[socket.id];
                 if (!socket_info) {
                     return;
                 }
 
                 // retrive user info
-                socket_room = socket_info["socket_room"];
+                socketRoom = socket_info["socketRoom"];
                 username = socket_info["username"];
 
                 // broadcast to others
-                socket.broadcast.to(socket_room).emit("recieve-kg", data, username);
+                socket.broadcast.to(socketRoom).emit("recieve-kg", data, username);
             });
 
             /**
@@ -227,13 +216,13 @@ exports.init = function (io) {
              */
             socket.on("disconnect", function () {
                 // socket validation
-                socket_info = socket_kg_info_dict[socket.id];
+                socket_info = socketKgInfoDict[socket.id];
                 if (!socket_info) {
                     return;
                 }
 
                 // delete user info
-                delete socket_kg_info_dict[socket.id];
+                delete socketKgInfoDict[socket.id];
             });
         } catch (e) { }
     });
