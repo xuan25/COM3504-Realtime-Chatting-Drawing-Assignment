@@ -72,10 +72,7 @@
             <button id="share-copy" type="button" class="btn btn-outline-success btn-sm ms-2">Copy share link</button>
             <button id="canvas-clear" type="button" class="btn btn-outline-danger btn-sm ms-2">Clear canvas</button>
         </div>
-        
-
     </div>
-
     
     <div class="row w-100 m-0" style="height: 50vh">
         <!-- Image/Drawing area -->
@@ -115,6 +112,48 @@
                 <button type="submit" id="chat-send" class="btn btn-primary">Send</button>
             </div>
         </form>
+    </div>
+
+    <!-- Guide  -->
+    <div id="guide-overlay" class="guide-overlay" style="display: none;">
+        <div class="d-flex flex-row justify-content-between align-items-center" style="height: 5vh">
+            <div class="guide-item w-50 h-100 d-flex justify-content-center align-items-center">
+                <span>
+                    <b>Room information: </b>
+                    Here are some informations of your room
+                </span>
+            </div>
+            <div class="guide-item w-50 h-100 d-flex justify-content-center align-items-center">
+                <span>
+                    <b>Tool Bar: </b>
+                    You can change the ink color, share the room, or clear the canvas
+                </span>
+            </div>
+        </div>
+        <div class="row w-100 m-0" style="height: 50vh">
+            <div class="col guide-item d-flex justify-content-center align-items-center">
+                <span>
+                    <b>Drawing Canvas: </b>
+                    <br/>
+                    Here you can annotate on the picture together with others in the room
+                </span>
+            </div>
+            <div class="col-3 guide-item d-flex justify-content-center align-items-center" style="height: 50vh">
+                <span>
+                    <b>Knowledge Graph Tags: </b>
+                    <br/>
+                    Here you can use knowledge graph to label the annotations in the canvas
+                </span>
+            </div>
+        </div>
+        <div class="w-100 guide-item d-flex flex-row justify-content-center align-items-center" style="height: 45vh;">
+            <span>
+                <b>Chatting Area: </b>
+                <br/>
+                Here you can chat with other people in the room
+            </span>
+        </div>
+        <button id="guide-btn" type="button" class="guide-btn btn btn-primary">Got it! Here we go!</button>
     </div>
 </div>
 

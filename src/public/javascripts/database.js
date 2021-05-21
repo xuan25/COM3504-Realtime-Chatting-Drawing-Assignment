@@ -122,6 +122,38 @@ async function getUsername() {
   }
 }
 
+async function setGuide() {
+  if (!indexedDb) {
+    await initDatabase();
+  }
+  if (indexedDb) {
+    try {
+      await indexedDb.put(JOIN_STORE_NAME, true, "guide");
+    } catch (error) {
+      console.log("IndexDB not available");
+    }
+  } else {
+    console.log("IndexDB not available");
+  }
+}
+
+async function isGuideSet() {
+  if (!indexedDb) {
+    await initDatabase();
+  }
+
+  if (indexedDb) {
+    try {
+      guide = await indexedDb.get(JOIN_STORE_NAME, "guide");
+      return guide == true;
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    console.log("IndexDB not available");
+  }
+}
+
 
 // -------- chat --------
 

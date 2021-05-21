@@ -117,6 +117,7 @@ $(document).ready(async () => {
         window.location.href=`/join/${imgId}/?roomId=${roomId}`
     }
 
+    initGuide();
     initChatHistory(roomIdDb);
     initDrawHistory(roomIdDb);
     initKgHistory(roomIdDb);
@@ -480,3 +481,15 @@ function writeInfo(message){
     history.scrollTop = history.scrollHeight;
 }
  
+/**
+ * Init guide. Show guide for the first time
+ */
+async function initGuide(){
+    if (!await isGuideSet()){
+        $("#guide-overlay").show()
+        $("#guide-btn").click(() => {
+            $("#guide-overlay").hide()
+            setGuide()
+        })
+    }
+}
