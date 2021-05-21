@@ -1,33 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><%= title %></title>
-
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="Is-Template" content="<%- isTemplate %>">
 
+    <title><%= title %></title>
+
+    <!-- External -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.css">
+    <script type="text/javascript" src="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.js"></script>
+    <script src="/javascripts/knowledgegraph.js"></script>
+
+    <script src="/javascripts/idb.js"></script>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- Internal -->
+    <script src="/javascripts/database.js"></script>
+    <script src="/javascripts/canvas.js"></script>
+    <script src="/javascripts/room.js"></script>
+    
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <link rel='stylesheet' href='/stylesheets/room.css'/>
+    
     <% if (!isTemplate) { %>
         <%- "<script>" %>
             <%- `var imgId = \'${imgId}\';` %>
             <%- `var roomId = \'${roomId}\';` %>
         <%- "</script>" %>
     <% } %>
-
-    <script src="/socket.io/socket.io.js"></script>
-    <link rel='stylesheet' href='/stylesheets/style.css'/>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-
-    <script src="/javascripts/idb.js"></script>
-    <script src="/javascripts/database.js"></script>
-
-    <script src="/javascripts/room.js"></script>
-    <script src="/javascripts/canvas.js"></script>
-
-    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.css">
-    <script type="text/javascript" src="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.js"></script>
-    <script src="/javascripts/knowledgegraph.js"></script>
-
-    <link rel='stylesheet' href='/stylesheets/room.css'/>
 </head>
 <body>
 <div>
