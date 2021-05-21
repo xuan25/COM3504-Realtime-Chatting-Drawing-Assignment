@@ -6,26 +6,26 @@
 2. Run `npm install` to install the required packages
 3. Make sure your mongoDB service is running on port `27017`
 4. Make sure the database `com3504` is empty
-5. Run `npm start` to strat up the server
+5. Run `npm start` to start up the server
 6. Browse [https://localhost:3000](https://localhost:3000)
 
 ## How to use
 
-Note: In this system, all chat and annotation history will be saved locally and the server will not record any of your data. ( except for uploading images). Also, the system can be used offline and you can access your history without an internet connection.
+Note: In this system, all chat and annotation history will be saved locally and the server will not record any of your data. (except for uploading images). Also, the system can be used offline， you can access your history without an internet connection.
 
 ### Upload an image
 
 1. Go to `Home` page
 2. Click `Upload` button on the top-right corner
-3. Fill-in informations
-4. Select an upload method (URL/File/Camera) and confirm the image you want to upload
+3. Fill-in information
+4. Select an upload method (URL/File/Camera) and select the image you want to upload
 5. Click the `Submit` button
 6. If succeed, you will then redirect to its `Join` page, you can then input a username and room number to start a annotation session
 
 ### View all the images and search for a author
 
 1. Go to `Home` page
-2. You can see all the uploaded images
+2. You can see all the uploaded images as a gallery
 3. Fill input `Search Author` with a author name, and click button `Search`
 4. Search result will be shown on the same page
 
@@ -34,15 +34,15 @@ Note: In this system, all chat and annotation history will be saved locally and 
 1. Go to `Home` page
 2. Find an image you like
 3. Click `Join` button
-4. Input your username and a Room number to start a new annotation session or join an existing room.
+4. Input your username and a room number to start a new annotation session or join an existing room.
 
 #### Chat with others
 
-You can chat with other users in the room in the Chat area. In offline mode, messages will not be sent and will be marked as `(unsent)`.
+You can chat with other users in the chat area of a room. When offline, messages will not be sent and will be marked as `(unsent)`.
 
 #### Drawing annotation
 
-In the Drawing Canvas area, you can annotate on the picture using the mouse together with other users. In the toolbar, you can change the colour of the ink.
+In the Drawing Canvas area, you can annotate on the picture using your mouse together with other users. In the toolbar, you can change the colour of the ink.
 
 #### Tag drawing annotation with Knowledge Graph
 
@@ -54,7 +54,18 @@ When you click on `Clear Canvas` button in the top right corner, the Drawing Can
 
 #### Share room
 
-When you click the `Copy Share Link` button, the share link for the room will be placed in your clipboard. Others can join your room via this link
+When you click the `Copy Share Link` button, the share link of the room will be placed in your clipboard. You can share this link with others, then they can join your room via this link.
+
+## Screenshots
+![home](imgs\home.jpeg)
+
+![home](imgs\upload.jpeg)
+
+![home](imgs\join.jpeg)
+
+![home](imgs\guide.jpeg)
+
+![home](imgs\room.jpeg)
 
 ## Roadmap/TODO
 
@@ -72,3 +83,12 @@ When you click the `Copy Share Link` button, the share link for the room will be
  - [x] Knowledge Graph tags can link to drawing annotations (by color)
  - [x] Users can share Knowledge Graph tags within a room
  - [x] Knowledge Graph tags can be stored in IndexedDB
+
+## Contact
+We are team WUBBA LUBBA DUB-DUB.
+If you would like to contact us, here are our contact details and Github links：
+
+ - Boxuan Shan: bshan3@sheffield.ac.uk
+ - JingXiang Qi: jqi6@sheffield.ac.uk
+ - Ziting Zhao: zzhao30@sheffield.ac.uk
+ - Github: [https://github.com/ace18zz/COM3504The-Intelligent-Web](https://github.com/ace18zz/COM3504The-Intelligent-Web)
